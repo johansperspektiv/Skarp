@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Poängräkning</title>
+<title>Skytte</title>
 <style>
   :root { --primary:#1E3D59; --secondary:#17B890; --bg:#F5F7FA; --dark:#111; --danger:#E53E3E; --gold:#B7791F; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin:0; padding:15px; color: var(--dark); }
@@ -107,43 +107,90 @@
 <body>
 
 <div class="container">
-  <h1 id="app-title">Poängräkning</h1>
+  <h1 id="app-title">Skytte</h1>
 
   <div class="tab-buttons">
-    <button id="btn-input" class="tab-btn active" type="button">Mata in</button>
+    <button id="btn-start" class="tab-btn active" type="button">Start</button>
+    <button id="btn-input" class="tab-btn" type="button">Registrera</button>
     <button id="btn-leaderboard" class="tab-btn" type="button">Topplista</button>
     <button id="btn-settings" class="tab-btn" type="button">Inställningar</button>
   </div>
 
-  <!-- INPUT TAB -->
-  <div id="input-tab">
-    <h2>Registrera resultat</h2>
+  <div class="modal-actions" style="margin-top:10px;">
+    <button class="btn-neutral" id="btn-open-latmask" type="button">📋 Skjutledare latmask</button>
+    <button class="btn-neutral" id="btn-open-skottskada" type="button"><span class="redcross-icon"></span>SKOTTSKADA</button>
+  </div>
 
-    <div class="info-box" style="margin-bottom:15px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
-      <span style="font-size:13px;">Matchkod: <strong id="current-match-code"></strong></span>
-      <div>
-        <button type="button" id="btn-show-matchcodes" class="small-btn" style="margin:0;">📋 Visa koder</button>
-        <button type="button" id="btn-change-matchcode" class="small-btn" style="margin:0 0 0 6px;">Byt kod</button>
-      </div>
-    </div>
+  <!-- START TAB -->
+  <div id="start-tab">
+    <h2>Start</h2>
 
     <div class="form-group">
+      <label>Skytt</label>
+      <input type="text" id="my_shooter_name" placeholder="Ditt namn">
+      <button type="button" class="small-btn" id="btn-jag-ar-skjutledare" style="margin-left:0;margin-top:8px;">Jag är skjutledare</button>
+      <button type="button" class="small-btn" id="btn-jag-ska-skjuta" style="margin-left:6px;margin-top:8px;">Jag ska skjuta</button>
+    </div>
+    <div class="form-group">
       <label>Plats</label>
-      <input type="text" id="match_location" placeholder="Var hålls tävlingen?">
+      <input type="text" id="match_location" placeholder="Var hålls skyttet?">
+      <div class="chip-row" id="location-chips"></div>
     </div>
     <div class="form-group">
       <label>Datum</label>
       <input type="date" id="match_date">
     </div>
     <div class="form-group">
+      <label>Skytteform</label>
+      <select id="match_form_type">
+        <option value="">Välj skytteform...</option>
+        <option value="Fält">Fält</option>
+        <option value="Föreningseget">Föreningseget</option>
+        <option value="Inskjutning">Inskjutning</option>
+        <option value="IPSC">IPSC</option>
+        <option value="Precision">Precision</option>
+        <option value="SRA">SRA</option>
+        <option value="Tjänstesportskytte">Tjänstesportskytte</option>
+        <option value="TTS">TTS</option>
+        <option value="__custom__">Annat (skriv själv)...</option>
+      </select>
+      <input type="text" id="match_form_type_custom" placeholder="Ange egen skytteform" style="display:none;margin-top:8px;">
+    </div>
+    <div class="form-group">
+      <label>Vapen</label>
+      <div class="chip-row" id="vapen-chips"></div>
+      <button type="button" class="small-btn" id="btn-vapen-add" style="margin-left:0;margin-top:8px;">➕ Lägg till vapen</button>
+      <button type="button" class="small-btn" id="btn-manage-vapen" style="margin-left:6px;margin-top:8px;">✏️ Hantera vapen</button>
+    </div>
+    <div class="form-group">
       <label>Skjutledare</label>
       <input type="text" id="match_officer" placeholder="Vem leder skyttet?">
+      <div class="chip-row" id="officer-chips" style="margin-top:8px;"></div>
     </div>
-
+    <div class="form-group">
+      <label id="connect_match_code_label">Anslut till tävling/träning med kod från skjutledaren</label>
+      <input type="text" id="connect_match_code" placeholder="Lämna tomt om du inte anslutit dig">
+      <div class="hint" style="margin-top:6px;">Alla som skriver in samma kod delar samma tävling/träning live. Lämnas fältet tomt är du inte ansluten till någon.</div>
+    </div>
     <div class="form-group">
       <label>PIN-kod</label>
-      <input type="password" id="pin" placeholder="Ange PIN">
+      <input type="text" id="pin" placeholder="Ange PIN" autocomplete="off">
     </div>
+
+    <button id="btn-goto-registrera" class="action-btn" type="button">Fortsätt till Registrera →</button>
+
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="btn-neutral" id="btn-open-qr" type="button">🔗 QR/länk</button>
+    </div>
+    <div class="modal-actions" style="margin-top:8px;">
+      <button class="btn-neutral" id="btn-open-howto" type="button">❓ Så använder du appen</button>
+    </div>
+  </div>
+
+  <!-- INPUT TAB -->
+  <div id="input-tab" style="display:none;">
+    <h2>Registrera resultat</h2>
+
     <div class="form-group">
       <label>Station</label>
       <select id="stage_select"></select>
@@ -197,16 +244,14 @@
     <button id="btn-save" class="action-btn" type="button">Spara &amp; Beräkna</button>
     <div id="status" class="status-wait">Ansluter till databasen…</div>
 
-    <div class="modal-actions" style="margin-top:20px;">
-      <button class="btn-neutral" id="btn-open-qr" type="button">🔗 QR/länk</button>
+    <hr style="margin-top:25px;">
+    <div class="form-group">
+      <label>Kommentar till loggboken (valfritt)</label>
+      <textarea id="log_comment" rows="2" placeholder="Skriv en kommentar om dagens pass innan du avslutar..."></textarea>
     </div>
-    <div class="modal-actions" style="margin-top:8px;">
-      <button class="btn-neutral" id="btn-open-howto" type="button">❓ Så använder du appen</button>
-    </div>
-    <div class="modal-actions" style="margin-top:8px;">
-      <button class="btn-neutral" id="btn-open-latmask" type="button">📋 Skjutledare latmask</button>
-      <button class="btn-neutral" id="btn-open-skottskada" type="button"><span class="redcross-icon"></span>SKOTTSKADA</button>
-    </div>
+    <button id="btn-finish-session" class="action-btn" type="button" style="background:var(--gold);">Avsluta passet</button>
+    <button id="btn-finish-my-participation" class="action-btn" type="button" style="background:var(--gold);">Avsluta mitt deltagande</button>
+    <button id="btn-fetch-log" class="btn-neutral" type="button" style="margin-top:10px;width:100%;">Hämta loggbok</button>
   </div>
 
   <!-- LEADERBOARD TAB -->
@@ -217,12 +262,12 @@
       <select id="leaderboard_stage_select"></select>
     </div>
     <div id="leaderboard-list">Laddar live-data…</div>
-    <button id="btn-clear" class="danger-btn" type="button">🗑️ Nollställ denna station</button>
+    <button id="btn-clear" class="danger-btn" type="button">Nollställ detta resultat</button>
     <div class="modal-actions" style="margin-top:15px;">
       <button class="btn-neutral" id="btn-export-csv" type="button">⬇️ Exportera CSV</button>
       <button class="btn-neutral" id="btn-print" type="button">🖨️ Skriv ut / PDF (alla flikar)</button>
     </div>
-    <button id="btn-reset-activity" class="danger-btn" type="button" style="margin-top:20px;">☠️ Nollställ alla stationer</button>
+    <button id="btn-reset-activity" class="danger-btn" type="button" style="margin-top:20px;">Nollställ alla resultat</button>
   </div>
 
   <!-- SETTINGS TAB -->
@@ -230,7 +275,8 @@
     <h2>Inställningar</h2>
     <div class="form-group">
       <label>Apptitel</label>
-      <input type="text" id="app_title_input" placeholder="Poängräkning">
+      <input type="text" id="app_title_input" placeholder="Genereras automatiskt (Skytteform – Plats – Datum)">
+      <div class="hint" style="margin-top:6px;">Sätts automatiskt utifrån Skytteform, Plats och Datum. Skriv en egen titel här för att låsa den, eller töm fältet för att gå tillbaka till automatiskt läge.</div>
     </div>
 
     <hr>
@@ -259,6 +305,11 @@
       <input type="password" id="pin_confirm" placeholder="Bekräfta ny PIN" autocomplete="off">
       <button id="btn-change-pin" class="action-btn" type="button">Byt PIN-kod</button>
     </div>
+
+    <hr>
+    <h2 style="margin-top:0;">Biträden</h2>
+    <p class="meta-text" style="margin-top:0;">Namn du väljer här (ur skyttlistan) får full åtkomst till alla funktioner (samma som skjutledare/PIN) så fort de skriver samma namn i fältet Skytt på Start-sidan — utan att behöva ange PIN-koden.</p>
+    <button type="button" class="small-btn" id="btn-manage-deputies" style="margin-left:0;">✏️ Hantera biträden</button>
   </div>
 </div>
 
@@ -355,18 +406,6 @@
   </div>
 </div>
 
-<!-- MATCH CODES MODAL -->
-<div class="modal-backdrop" id="matchCodesModalBackdrop">
-  <div class="modal-box" style="text-align:left;">
-    <h3>Kända matchkoder</h3>
-    <p class="meta-text">Endast koder som skapats som "synliga" visas här. Dolda koder måste skrivas in manuellt.</p>
-    <div id="matchcodes-list"></div>
-    <div class="modal-actions">
-      <button class="btn-confirm" id="btn-close-matchcodes" type="button">Stäng</button>
-    </div>
-  </div>
-</div>
-
 <!-- MANAGE SHOOTERS MODAL -->
 <div class="modal-backdrop" id="manageShootersModalBackdrop">
   <div class="modal-box" style="text-align:left;">
@@ -374,6 +413,28 @@
     <div id="manage-shooters-list"></div>
     <div class="modal-actions">
       <button class="btn-confirm" id="btn-close-manage-shooters" type="button">Stäng</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE VAPEN MODAL -->
+<div class="modal-backdrop" id="manageVapenModalBackdrop">
+  <div class="modal-box" style="text-align:left;">
+    <h3>Hantera vapen</h3>
+    <div id="manage-vapen-list"></div>
+    <div class="modal-actions">
+      <button class="btn-confirm" id="btn-close-manage-vapen" type="button">Stäng</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE DEPUTIES MODAL -->
+<div class="modal-backdrop" id="manageDeputiesModalBackdrop">
+  <div class="modal-box" style="text-align:left;">
+    <h3>Hantera biträden</h3>
+    <div id="manage-deputies-list"></div>
+    <div class="modal-actions">
+      <button class="btn-confirm" id="btn-close-manage-deputies" type="button">Stäng</button>
     </div>
   </div>
 </div>
@@ -412,7 +473,7 @@
     <h4>Som skytt</h4>
     <ul>
       <li>Skanna QR-koden eller öppna länken du fått av skjutledaren (finns även under "🔗 QR/länk" på förstasidan om du behöver dela den vidare).</li>
-      <li>Gå till fliken "Mata in". Om ditt namn inte redan syns som ett snabbval under fältet Skytt, skriv in det och tryck på "➕ Lägg till skytt (ingen PIN)" — du behöver ingen kod för att registrera dig själv.</li>
+      <li>Gå till fliken "Registrera". Om ditt namn inte redan syns som ett snabbval under fältet Skytt, skriv in det och tryck på "➕ Lägg till skytt (ingen PIN)" — du behöver ingen kod för att registrera dig själv.</li>
       <li>Fälten Poäng, Straff, Bonus och Tid är gråtonade och går inte att röra förrän skjutledaren skriver in PIN-koden — det är avsiktligt, så att ingen råkar mata in fel av misstag.</li>
       <li>Följ resultaten live under fliken "Topplista". Välj din senaste station i listan, eller välj "Total" för att se den samlade ställningen för hela tävlingen. På vanliga stationer avgörs din placering av hur stor andel av stationens maxpoäng du får, baserat på din Hit Factor jämfört med vinnarens. På rena Precision-stationer räknas istället bara dina faktiska poäng — tid spelar ingen roll där.</li>
     </ul>
@@ -420,22 +481,22 @@
     <h4>Som skjutledare — Komma igång</h4>
     <ul>
       <li>Dela länken eller QR-koden ("🔗 QR/länk" på förstasidan) med skyttarna innan ni börjar.</li>
-      <li>Fyll i Plats, Datum och ditt namn under Skjutledare högst upp på "Mata in" — synas live för alla enheter.</li>
-      <li>Alla som använder samma matchkod delar samma tävling. Har du en egen matchkod blandas din data aldrig med någon annans, även om ni kör samma app. Tryck "📋 Visa koder" bredvid matchkoden för att se och snabbt växla mellan tidigare synliga koder — vill du hålla en kod dold behöver du bara svara nej när appen frågar om den ska synas i listan.</li>
+      <li>Fyll i Skytt, Plats, Datum, Skytteform, Vapen och Skjutledare på "Start"-sidan. Tryck "Jag är skjutledare" direkt under Skytt för att markera dig själv som skjutledare — det kopierar automatiskt ditt namn till Skjutledare-fältet.</li>
+      <li>Skriv in en egen kod under "Anslut till tävling/träning med kod från skjutledaren" och dela samma kod med skyttarna. Alla som skriver in samma kod delar samma tävling live; är fältet tomt (standard) är du inte ansluten till någon delad tävling alls. Skytt och Vapen sparas alltid lokalt på din enhet och påverkas inte av att koden byts.</li>
     </ul>
 
     <h4>Som skjutledare — Bygga stationer</h4>
     <ul>
-      <li>Gå in på "Inställningar" (PIN krävs, men bara en gång per tillfälle om du redan skrivit in den korrekt på förstasidan) och lägg upp stationerna. Tryck på pennan ✏️ bredvid en station för att öppna redigeringsläget: namn, avstånd, vapen, startposition (Grundställning, Färdigställning, eller egen), måltyper (Metric, HF2020, Stål eller Precision — med antal mål och skott per mål), ev. bonusuppgift (alltid värd 10 poäng), No-shoot-mål, beskrivning och gärna en bild på stationen. Tryck "💾 Spara ändringar" när du är klar.</li>
+      <li>Gå in på "Inställningar" och lägg upp stationerna. Är du markerad som skjutledare och ansluten till en delad kod har du redan full åtkomst utan att skriva någon PIN. Tryck på pennan ✏️ bredvid en station för att öppna redigeringsläget: namn, avstånd, vapen, startposition (Grundställning, Färdigställning, eller egen), måltyper (Metric, HF2020, Stål eller Precision — med antal mål och skott per mål), ev. bonusuppgift (alltid värd 10 poäng), No-shoot-mål, beskrivning och gärna en bild på stationen. Tryck "💾 Spara ändringar" när du är klar.</li>
       <li>Ska du köra ren precisionsskjutning kan du använda genvägen "🎯 Lägg till 10× Precision" som skapar tio färdiga stationer (10 serier à 5 skott) på en gång.</li>
       <li>Spara gärna en station som mall (📑) för att snabbt kunna återanvända den vid nästa tävling — sparade mallar hittar du under Inställningar, sorterade efter avstånd. "📑 Hämta bas-stationer" (längre ner, behövs oftast bara en gång) lägger till appens 12 fördefinierade standardstationer i din mallista utan att röra dina egna.</li>
-      <li>Vill du köra samma övning flera gånger (t.ex. flera serier på en precisionsstation)? Tryck "🔁 Duplicera som Serie" i Inställningar, eller "➕ Lägg till en serie" direkt på Mata in (kräver PIN) — den nya serien hamnar automatiskt precis efter sin ursprungsstation, inte längst ner i listan, och poängsätts helt separat från originalstationen.</li>
-      <li>Du kan ta bort en enskild station direkt från Mata in ("🗑️ Ta bort denna station", kräver PIN) eller alla på en gång via "🗑️ Ta bort alla stationer" i Inställningar — båda blockeras om stationen/stationerna redan har registrerade resultat. Nollställ i så fall stationen under Topplista först.</li>
+      <li>Vill du köra samma övning flera gånger (t.ex. flera serier på en precisionsstation)? Tryck "🔁 Duplicera som Serie" i Inställningar, eller "➕ Lägg till en serie" direkt på Registrera (kräver PIN om ingen är aktiverad, eller om du inte är markerad som skjutledare) — den nya serien hamnar automatiskt precis efter sin ursprungsstation, inte längst ner i listan, och poängsätts helt separat från originalstationen.</li>
+      <li>Du kan ta bort en enskild station direkt från Registrera ("🗑️ Ta bort denna station") eller alla på en gång via "🗑️ Ta bort alla stationer" i Inställningar — båda blockeras om stationen/stationerna redan har registrerade resultat. Nollställ i så fall stationen under Topplista först.</li>
     </ul>
 
     <h4>Som skjutledare — Under tävlingen</h4>
     <ul>
-      <li>Under "Mata in": välj station, välj eller skriv in skyttens namn, skriv PIN-koden (låser upp Poäng/Straff/Bonus/Tid), och registrera träffarna med Poäng-knapparna. Har stationen bara ett målsystem hoppar du direkt till träffknapparna; annars väljer du måltyp först. Du kan blanda flera måltyper i samma omgång, varje träff läses upp med röst, och det finns en röd MISS-knapp om skytten bommar helt (på Precision ger MISS 0 poäng istället för avdrag).</li>
+      <li>Under "Registrera": välj station, välj eller skriv in skyttens namn, och registrera träffarna med Poäng-knapparna. Har stationen bara ett målsystem hoppar du direkt till träffknapparna; annars väljer du måltyp först. Du kan blanda flera måltyper i samma omgång, varje träff läses upp med röst, och det finns en röd MISS-knapp om skytten bommar helt (på Precision ger MISS 0 poäng istället för avdrag).</li>
       <li>Lägg till ev. straff/bonus med plus/minus-knapparna, och ange tiden med sifferknapparna. Skjuts stationen utan skjuttimer kan du kryssa i "Ingen tid" för att slippa tidskravet. Tryck sist på "Spara &amp; Beräkna" — en tydlig bekräftelseruta visas när det är klart.</li>
       <li>Om skytten redan har ett resultat på stationen får du en fråga om du vill skriva över det — säg bara ja om det verkligen ska ändras.</li>
       <li>Skrev du fel namn på en skytt? Tryck "✏️ Hantera skyttar" bredvid Skytt-fältet för att ändra eller ta bort namn ur listan (påverkar inte redan sparade resultat). Skyttarna listas i den ordning de lades till.</li>
@@ -444,18 +505,19 @@
 
     <h4>Som skjutledare — Efter tävlingen</h4>
     <ul>
-      <li>Under "Topplista" kan du ändra eller radera ett redan sparat resultat (kräver PIN), nollställa en enskild station, exportera allt som CSV (öppnas direkt i Excel), eller skriva ut/spara som PDF — utskriften tar med samtliga stationer plus Total på en egen sida. Både CSV och PDF visar även "Träffbild" per skytt (t.ex. A:2 B:1 C:0 D:1 MISS:0).</li>
-      <li>"☠️ Nollställ alla stationer" längst ner under Topplista raderar alla skyttar och resultat, men stationerna ligger kvar — perfekt om du vill köra samma upplägg igen vid nästa tillfälle. Kräver PIN-koden två gånger som extra säkerhet, så säkerställ att du exporterat resultatet innan du använder den.</li>
-      <li>PIN-koden går att byta under Inställningar, men det kräver även en hemlig "ägarkod" som bara du känner till (finns direkt i appens kod).</li>
+      <li>Under "Topplista" kan du ändra eller radera ett redan sparat resultat, nollställa en enskild station, exportera allt som CSV (öppnas direkt i Excel), eller skriva ut/spara som PDF — utskriften tar med samtliga stationer plus Total på en egen sida. Både CSV och PDF visar även "Träffbild" per skytt (t.ex. A:2 B:1 C:0 D:1 MISS:0).</li>
+      <li>"Nollställ alla resultat" längst ner under Topplista raderar alla skyttar och resultat, men stationerna ligger kvar — perfekt om du vill köra samma upplägg igen vid nästa tillfälle. Kräver PIN-koden två gånger som extra säkerhet, så säkerställ att du exporterat resultatet innan du använder den.</li>
+      <li>PIN-koden går att byta under Inställningar, men det kräver även en hemlig "ägarkod" som bara du känner till (finns direkt i appens kod). Enklast sätter du dock en delad PIN-kod direkt genom att skriva in den i PIN-fältet på Start-sidan medan "Jag är skjutledare" är ikryssad — då gäller den koden direkt för alla skyttar som skriver in samma kod.</li>
     </ul>
 
     <h4>Vanliga frågor (FAQ)</h4>
     <ul>
-      <li><strong>Vad är matchkoden och varför behöver jag den?</strong><br>Matchkoden är din personliga "rum" i den delade databasen. Alla som skriver in samma kod ser samma tävling; olika koder håller olika personers data helt separerade i samma app.</li>
-      <li><strong>Syns min matchkod för alla?</strong><br>Bara om du väljer det. När du skapar eller byter kod frågar appen om den ska synas i den delade listan ("📋 Visa koder") — svarar du nej hålls koden helt dold och måste skrivas in manuellt av den som ska använda den.</li>
-      <li><strong>Kan jag använda appen offline?</strong><br>Nej, appen behöver internetuppkoppling eftersom resultat och stationer synkas live via molnet mellan alla enheter.</li>
-      <li><strong>Hur delar jag appen med en vän utan att blanda ihop våra tävlingar?</strong><br>Skicka länken/QR-koden som vanligt. Din vän skriver in sin egen matchkod första gången — då hålls ni helt separerade trots att ni använder samma app och databas.</li>
-      <li><strong>Vad händer om jag glömmer PIN-koden?</strong><br>Den som har tillgång till appens kod på GitHub kan alltid läsa av eller ändra PIN-koden direkt i inställningarna där (leta efter texten currentPin), eller sätta en ny via ägarkoden i appen.</li>
+      <li><strong>Vad är koden på Start-sidan och varför behöver jag den?</strong><br>Koden under "Anslut till tävling/träning med kod från skjutledaren" är ert gemensamma "rum" i den delade databasen. Alla som skriver in samma kod ser samma tävling live; olika koder håller olika personers/gruppers data helt separerade i samma app. Som standard är du inte ansluten till någon kod alls.</li>
+      <li><strong>Vad händer med mina uppgifter om jag byter kod?</strong><br>Skytt och Vapen är personliga och sparas lokalt på din enhet — de finns kvar oavsett vilken kod du är ansluten till. Plats, Datum, Skytteform och Skjutledare hör däremot ihop med den specifika koden och byts ut när du ansluter till en ny.</li>
+      <li><strong>Kan jag använda appen offline?</strong><br>Nej, appen behöver internetuppkoppling eftersom resultat och stationer synkas live via molnet mellan alla enheter som är anslutna till samma kod.</li>
+      <li><strong>Hur fungerar PIN-koden och skjutledarstatusen?</strong><br>Ingen PIN är aktiverad som standard — då har alla full åtkomst. Är du markerad som "Jag är skjutledare" och ansluten till en kod har du alltid full åtkomst, oavsett PIN. Skriver du (som skjutledare) något i PIN-fältet sätts det direkt som en delad kod — andra skyttar som skriver in samma kod i sitt eget PIN-fält får då samma åtkomst som dig.</li>
+      <li><strong>Hur delar jag appen med en vän utan att blanda ihop våra tävlingar?</strong><br>Skicka länken/QR-koden som vanligt. Din vän lämnar bara kodfältet tomt (eller skriver en helt egen kod) — då hålls ni helt separerade trots att ni använder samma app och databas.</li>
+      <li><strong>Vad händer om jag glömmer PIN-koden?</strong><br>Den som har tillgång till appens kod på GitHub kan alltid läsa av eller ändra PIN-koden direkt i inställningarna där (leta efter texten currentPin), eller sätta en ny via ägarkoden i appen. Enklast är annars att markera dig som skjutledare igen — det ger full åtkomst utan att behöva PIN-koden.</li>
       <li><strong>Hur fungerar Stationspoäng?</strong><br>Vinnaren av en station (högst Hit Factor) får hela stationens maxpoäng. Övriga får sin andel av vinnarens Hit Factor multiplicerat med maxpoängen. På rena Precision-stationer räknas istället bara faktiska poäng, utan tidspåverkan.</li>
       <li><strong>Hur exporterar jag resultatet när tävlingen är klar?</strong><br>Gå till Topplista och tryck "⬇️ Exportera CSV" (öppnas direkt i Excel) eller "🖨️ Skriv ut / PDF" (tar med alla stationer plus Total, med Total på egen sida).</li>
     </ul>
@@ -605,12 +667,13 @@
 <!-- Firebase (fullständiga, korrekta CDN-länkar) -->
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <script>
 (function () {
   "use strict";
 
-  var currentPin = "1234";
+  var currentPin = "";
   // Ändra raden nedan till en hemlig kod bara DU känner till.
   // Den krävs (utöver PIN-koden) för att kunna byta PIN-koden.
   var OWNER_CODE = "7777";
@@ -643,109 +706,164 @@
     if (saveBtn) saveBtn.disabled = true;
   }
 
+  // Engångsstädning: den gamla delade listan över matchkoder ("Visa koder")
+  // används inte längre och rensas bort en gång så den inte ligger och skräpar.
+  if (db) {
+    var registryAlreadyCleared = false;
+    try { registryAlreadyCleared = window.localStorage.getItem("poangrakning_registry_cleared") === "1"; } catch (e) { /* ignore */ }
+    if (!registryAlreadyCleared) {
+      db.ref("matchCodeRegistry").remove().then(function () {
+        try { window.localStorage.setItem("poangrakning_registry_cleared", "1"); } catch (e) { /* ignore */ }
+      }).catch(function () { /* ignore - försöker igen nästa gång */ });
+    }
+  }
+
   // ---------------------------------------------------------------
   // Matchkod: separerar olika tävlingar/personer i samma databas.
   // Allt (stationer, resultat, skyttar, PIN osv.) sparas under
   // "codes/<matchkod>/..." istället för direkt på databasens rot,
   // så att flera personer kan använda samma app helt oberoende
   // av varandra utan att blanda data.
+  //
+  // Standard: INTE ansluten till någon delad kod. Ett privat,
+  // enhetsbundet ID används tyst i bakgrunden så appen fungerar
+  // som en helt egen (osynlig) session tills man aktivt ansluter
+  // till en riktig kod på Start-sidan under Skjutledare.
   // ---------------------------------------------------------------
   function sanitizeMatchCode(code) {
     return String(code || "").trim().toLowerCase().replace(/[.#$\[\]\/\s]+/g, "_");
   }
 
-  var matchCode = "";
+  function getOrCreatePrivateDeviceCode() {
+    var id = "";
+    try { id = window.localStorage.getItem("poangrakning_device_code") || ""; } catch (e) { /* ignore */ }
+    if (!id) {
+      id = "device_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
+      try { window.localStorage.setItem("poangrakning_device_code", id); } catch (e) { /* ignore */ }
+    }
+    return id;
+  }
+
+  var storedMatchCode = "";
   try {
-    matchCode = window.localStorage.getItem("poangrakning_match_code") || "";
+    storedMatchCode = window.localStorage.getItem("poangrakning_match_code") || "";
   } catch (e) { /* localStorage kan vara blockerat */ }
 
-  if (!matchCode) {
-    var enteredCode = prompt(
-      "Ange en matchkod (valfritt ord eller nummer, t.ex. ditt namn).\n\n" +
-      "Alla som använder samma kod delar samma tävling. Hitta på en egen kod om du inte vill blanda data med någon annan som använder appen.",
-      ""
-    );
-    matchCode = sanitizeMatchCode(enteredCode) || "standard";
-    try { window.localStorage.setItem("poangrakning_match_code", matchCode); } catch (e) { /* ignore */ }
-    registerMatchCodeIfWanted(matchCode);
-  } else {
-    matchCode = sanitizeMatchCode(matchCode);
-  }
+  var isConnectedToSharedCode = !!storedMatchCode;
+  var matchCode = isConnectedToSharedCode ? sanitizeMatchCode(storedMatchCode) : getOrCreatePrivateDeviceCode();
 
   function dbPath(p) {
     return "codes/" + matchCode + "/" + p;
   }
 
-  function registerMatchCodeIfWanted(code) {
-    if (!db) return;
-    var makePublic = confirm(
-      "Vill du att matchkoden \"" + code + "\" ska synas i den delade listan över matchkoder, så andra lätt kan hitta och välja den?\n\n" +
-      "Tryck Avbryt om du vill hålla den privat/dold."
-    );
-    if (makePublic) {
-      db.ref("matchCodeRegistry/" + code).set({ createdAt: Date.now() });
-    }
+  // "Hjärtslag": så länge man är ansluten till en delad kod uppdateras en
+  // tidsstämpel varje gång appen öppnas. Det gör att appen kan upptäcka
+  // koder som ligger övergivna (ingen har öppnat appen med den koden på
+  // länge) och varna/erbjuda att rensa dem, istället för att gammal skräp-
+  // data ligger kvar för evigt eller krockar om någon annan råkar skriva
+  // in samma kod.
+  var STALE_CODE_MS = 24 * 60 * 60 * 1000; // 1 dygn utan aktivitet räknas som övergiven
+  if (db && isConnectedToSharedCode) {
+    db.ref(dbPath("meta/lastActive")).set(Date.now());
   }
 
-  var currentMatchCodeEl = document.getElementById("current-match-code");
-  if (currentMatchCodeEl) currentMatchCodeEl.textContent = matchCode;
+  var connectMatchCodeInput = document.getElementById("connect_match_code");
+  if (connectMatchCodeInput) {
+    connectMatchCodeInput.value = storedMatchCode;
+    connectMatchCodeInput.addEventListener("change", function () {
+      var newCode = connectMatchCodeInput.value.trim();
+      if (!newCode) {
+        try {
+          window.localStorage.removeItem("poangrakning_match_code");
+          window.localStorage.removeItem("poangrakning_established_as_skjutledare");
+        } catch (e) { /* ignore */ }
+        location.reload();
+        return;
+      }
+      var cleaned = sanitizeMatchCode(newCode);
+      if (!cleaned) { alert("Koden kan inte vara tom."); connectMatchCodeInput.value = storedMatchCode; return; }
+      // Fryser skjutledarstatus vid anslutningstillfället, så att man senare
+      // kan kryssa ur/i "Jag är skjutledare" utan att knappen låser sig - den
+      // som var skjutledare när koden sattes förblir alltid kunna toggla den.
+      var wasSkjutledare = false;
+      try { wasSkjutledare = window.localStorage.getItem("poangrakning_am_skjutledare") === "1"; } catch (e) { /* ignore */ }
 
-  document.getElementById("btn-change-matchcode").addEventListener("click", function () {
-    var newCode = prompt("Ange matchkod:", matchCode);
-    if (newCode === null) return;
-    var cleaned = sanitizeMatchCode(newCode);
-    if (!cleaned) { alert("Matchkoden kan inte vara tom."); return; }
-    try { window.localStorage.setItem("poangrakning_match_code", cleaned); } catch (e) { /* ignore */ }
-    registerMatchCodeIfWanted(cleaned);
-    alert("Matchkod ändrad till \"" + cleaned + "\". Appen laddas om.");
-    location.reload();
-  });
-
-  document.getElementById("btn-show-matchcodes").addEventListener("click", function () {
-    if (!db) return;
-    db.ref("matchCodeRegistry").once("value").then(function (snap) {
-      var data = snap.val() || {};
-      var container = document.getElementById("matchcodes-list");
-      container.innerHTML = "";
-      var codes = Object.keys(data);
-
-      if (!codes.length) {
-        container.innerHTML = "<p class='meta-text'>Inga synliga matchkoder registrerade än.</p>";
-      } else {
-        codes.sort();
-        codes.forEach(function (code) {
-          var row = document.createElement("div");
-          row.className = "settings-row";
-
-          var span = document.createElement("span");
-          span.style.flex = "1";
-          span.style.width = "auto";
-          span.textContent = code + (code === matchCode ? " (nuvarande)" : "");
-
-          var useBtn = document.createElement("button");
-          useBtn.type = "button";
-          useBtn.className = "small-btn";
-          useBtn.style.marginLeft = "0";
-          useBtn.style.marginTop = "0";
-          useBtn.textContent = code === matchCode ? "Aktiv" : "Använd";
-          useBtn.disabled = code === matchCode;
-          useBtn.addEventListener("click", function () {
-            try { window.localStorage.setItem("poangrakning_match_code", code); } catch (e) { /* ignore */ }
-            location.reload();
-          });
-
-          row.appendChild(span);
-          row.appendChild(useBtn);
-          container.appendChild(row);
-        });
+      function finishConnect() {
+        try {
+          window.localStorage.setItem("poangrakning_match_code", cleaned);
+          window.localStorage.setItem("poangrakning_established_as_skjutledare", wasSkjutledare ? "1" : "0");
+        } catch (e) { /* ignore */ }
+        location.reload();
       }
 
-      document.getElementById("matchCodesModalBackdrop").classList.add("open");
+      function migrateIfEstablishing() {
+        if (wasSkjutledare && db) {
+          // Jag skapar/etablerar den nya delade koden som skjutledare - flytta
+          // med det jag redan hunnit fylla i (Plats/Datum/Skytteform/Skjutledare,
+          // ev. redan uppsatta stationer m.m.) så inget går förlorat. Skriver
+          // aldrig över en kod som redan har egen data (t.ex. någon annans
+          // aktiva tävling). Den gamla (privata) koden RENSAS efter flytten,
+          // så inget gammalt Plats/Datum/Skytteform ligger kvar och dyker upp
+          // igen nästa gång man kopplas bort och landar på den privata koden.
+          var oldCodePrefix = "codes/" + matchCode + "/";
+          var newCodePrefix = "codes/" + cleaned + "/";
+          db.ref(newCodePrefix + "settings/matchInfo").once("value").then(function (destSnap) {
+            if (destSnap.val()) {
+              finishConnect();
+              return;
+            }
+            db.ref(oldCodePrefix).once("value").then(function (srcSnap) {
+              var data = srcSnap.val();
+              if (data) {
+                db.ref(newCodePrefix).set(data).then(function () {
+                  return db.ref("codes/" + matchCode).remove();
+                }).then(finishConnect).catch(finishConnect);
+              } else {
+                finishConnect();
+              }
+            }).catch(finishConnect);
+          }).catch(finishConnect);
+        } else {
+          finishConnect();
+        }
+      }
+
+      if (!db) { finishConnect(); return; }
+
+      // Kolla om koden verkar övergiven innan vi ansluter, så gammal skräp-
+      // data inte ligger kvar i onödan och så att en krock med en förbisedd
+      // gammal kod upptäcks direkt istället för att blandas ihop av misstag.
+      db.ref("codes/" + cleaned + "/meta/lastActive").once("value").then(function (snap) {
+        var lastActive = snap.val();
+        var isStale = lastActive && (Date.now() - lastActive > STALE_CODE_MS);
+        if (!isStale) {
+          migrateIfEstablishing();
+          return;
+        }
+        var lastDateText = new Date(lastActive).toLocaleString("sv-SE");
+        if (wasSkjutledare) {
+          var wipe = confirm(
+            "Koden \"" + cleaned + "\" verkar överg­iven - senast använd " + lastDateText + ".\n\n" +
+            "Tryck OK för att rensa den gamla datan och ta över koden helt (rekommenderas).\n" +
+            "Tryck Avbryt för att istället ansluta till den befintliga (troligen inaktuella) datan utan att röra den."
+          );
+          if (wipe) {
+            db.ref("codes/" + cleaned).remove().then(migrateIfEstablishing).catch(migrateIfEstablishing);
+            return;
+          }
+        } else {
+          if (!confirm(
+            "Koden \"" + cleaned + "\" verkar inte ha använts sedan " + lastDateText + " - kontrollera att du skrivit rätt kod.\n\n" +
+            "Tryck OK för att ansluta ändå."
+          )) {
+            connectMatchCodeInput.value = storedMatchCode;
+            return;
+          }
+        }
+        migrateIfEstablishing();
+      }).catch(migrateIfEstablishing);
     });
-  });
-  document.getElementById("btn-close-matchcodes").addEventListener("click", function () {
-    document.getElementById("matchCodesModalBackdrop").classList.remove("open");
-  });
+  }
 
   // ---------------------------------------------------------------
   // Standard-bibliotek: färdiga bas-stationsmallar (utgångsläge som
@@ -886,21 +1004,51 @@
   });
 
   // ---------------------------------------------------------------
-  // Apptitel (redigerbar, delad i molnet)
+  // Apptitel (redigerbar, delad i molnet). Genereras automatiskt från
+  // Skytteform, Plats och Datum - men går att skriva över manuellt i
+  // Inställningar (töm fältet för att gå tillbaka till automatiskt läge).
   // ---------------------------------------------------------------
   var appTitleEl = document.getElementById("app-title");
   var appTitleInput = document.getElementById("app_title_input");
+  var appTitleManual = false;
+
+  function computeAutoTitle() {
+    var parts = [];
+    if (typeof getFormTypeValue === "function") {
+      var ft = getFormTypeValue();
+      if (ft) parts.push(ft);
+    }
+    if (typeof locationInput !== "undefined" && locationInput && locationInput.value.trim()) parts.push(locationInput.value.trim());
+    if (typeof dateInput !== "undefined" && dateInput && dateInput.value.trim()) parts.push(dateInput.value.trim());
+    return parts.length ? parts.join(" – ") : "Skytte";
+  }
+
+  function maybeUpdateAutoTitle() {
+    if (appTitleManual || !db) return;
+    db.ref(dbPath("settings/appTitle")).set(computeAutoTitle());
+  }
 
   if (db) {
+    db.ref(dbPath("settings/appTitleManual")).on("value", function (snap) {
+      appTitleManual = snap.val() === true;
+    });
     db.ref(dbPath("settings/appTitle")).on("value", function (snap) {
-      var title = snap.val() || "Poängräkning";
+      var title = snap.val() || "Skytte";
       appTitleEl.textContent = title;
       document.title = title;
-      if (document.activeElement !== appTitleInput) appTitleInput.value = title;
+      if (document.activeElement !== appTitleInput) appTitleInput.value = appTitleManual ? title : "";
     });
   }
   appTitleInput.addEventListener("change", function () {
-    var val = appTitleInput.value.trim() || "Poängräkning";
+    var val = appTitleInput.value.trim();
+    if (!val) {
+      appTitleManual = false;
+      db.ref(dbPath("settings/appTitleManual")).set(false);
+      maybeUpdateAutoTitle();
+      return;
+    }
+    appTitleManual = true;
+    db.ref(dbPath("settings/appTitleManual")).set(true);
     db.ref(dbPath("settings/appTitle")).set(val);
   });
 
@@ -1979,12 +2127,9 @@
   // Byt PIN-kod (kräver ägarkod + nuvarande PIN)
   // ---------------------------------------------------------------
   if (db) {
-    db.ref(dbPath("settings/pin")).once("value").then(function (snap) {
-      if (snap.val() === null) db.ref(dbPath("settings/pin")).set(currentPin);
-    });
     db.ref(dbPath("settings/pin")).on("value", function (snap) {
       var val = snap.val();
-      if (val) currentPin = val;
+      currentPin = val || "";
       if (typeof refreshPinLock === "function") refreshPinLock();
     });
   }
@@ -2010,11 +2155,403 @@
   });
 
   // ---------------------------------------------------------------
-  // Plats / Skjutledare (matchinfo, delat i molnet)
+  // Skytt (eget namn, sparas lokalt på enheten till nästa tillfälle)
+  // ---------------------------------------------------------------
+  var myShooterNameInput = document.getElementById("my_shooter_name");
+  try {
+    var savedMyName = window.localStorage.getItem("poangrakning_my_name");
+    if (savedMyName) myShooterNameInput.value = savedMyName;
+  } catch (e) { /* localStorage kan vara blockerat */ }
+
+  // ---------------------------------------------------------------
+  // "Jag är skjutledare" / "Jag ska skjuta": lokala (enhetsbundna)
+  // statusflaggor. Skjutledarstatus fungerar som en PIN-kod - ger
+  // samma åtkomst som att ha rätt PIN, förutsatt att man är ansluten
+  // till en delad matchkod. "Jag ska skjuta" styr om mitt eget namn
+  // ska ligga med bland skyttarna på Registrera: en vanlig skytt som
+  // ansluter är förvalt aktiv (läggs automatiskt till), medan en
+  // skjutledare är förvald inaktiv (organiserar utan att nödvändigtvis
+  // skjuta själv) tills de aktivt kryssar i den.
+  // ---------------------------------------------------------------
+  var amISkjutledare = false;
+  try { amISkjutledare = window.localStorage.getItem("poangrakning_am_skjutledare") === "1"; } catch (e) { /* ignore */ }
+
+  var establishedAsSkjutledare = false;
+  try { establishedAsSkjutledare = window.localStorage.getItem("poangrakning_established_as_skjutledare") === "1"; } catch (e) { /* ignore */ }
+
+  var jagSkaSkjutaRaw = null;
+  try { jagSkaSkjutaRaw = window.localStorage.getItem("poangrakning_jag_ska_skjuta"); } catch (e) { /* ignore */ }
+  var jagSkaSkjuta = jagSkaSkjutaRaw === null ? !amISkjutledare : jagSkaSkjutaRaw === "1";
+
+  function syncMyShooterStatus() {
+    var val = myShooterNameInput.value.trim();
+    if (!val || !db) return;
+    var key = sanitizeKey(val);
+    if (jagSkaSkjuta) {
+      db.ref(dbPath("shooters/" + key)).once("value").then(function (snap) {
+        var addedAt = getShooterAddedAt(snap.val()) || Date.now();
+        db.ref(dbPath("shooters/" + key)).set({ name: val, addedAt: addedAt });
+      });
+    } else {
+      db.ref(dbPath("shooters/" + key)).remove();
+    }
+  }
+
+  myShooterNameInput.addEventListener("change", function () {
+    var val = myShooterNameInput.value.trim();
+    try { window.localStorage.setItem("poangrakning_my_name", val); } catch (e) { /* ignore */ }
+    syncMyShooterStatus();
+  });
+
+  var btnJagArSkjutledare = document.getElementById("btn-jag-ar-skjutledare");
+  var btnJagSkaSkjuta = document.getElementById("btn-jag-ska-skjuta");
+  var connectMatchCodeLabelEl = document.getElementById("connect_match_code_label");
+  function updateConnectCodeLabel() {
+    connectMatchCodeLabelEl.textContent = amISkjutledare
+      ? "Ange kod som skyttar ansluter med"
+      : "Anslut till tävling/träning med kod från skjutledaren";
+  }
+  function updateJagSkaSkjutaUI() {
+    btnJagSkaSkjuta.textContent = jagSkaSkjuta ? "✓ Jag ska skjuta" : "Jag ska skjuta";
+    btnJagSkaSkjuta.style.background = jagSkaSkjuta ? "var(--secondary)" : "";
+  }
+  function updateSkjutledareButtonUI() {
+    btnJagArSkjutledare.textContent = amISkjutledare ? "✓ Jag är skjutledare" : "Jag är skjutledare";
+    btnJagArSkjutledare.style.background = amISkjutledare ? "var(--secondary)" : "";
+    // Avstängd bara om man anslöt till en delad kod SOM SKYTT (inte satte
+    // koden själv som skjutledare) - då är rollen redan bestämd av någon
+    // annan. Den som väl etablerade koden som skjutledare kan alltid kryssa
+    // i/ur fritt igen, även efter att ha klickat ur den en gång.
+    btnJagArSkjutledare.disabled = isConnectedToSharedCode && !establishedAsSkjutledare;
+    updateConnectCodeLabel();
+  }
+  btnJagSkaSkjuta.addEventListener("click", function () {
+    jagSkaSkjuta = !jagSkaSkjuta;
+    try { window.localStorage.setItem("poangrakning_jag_ska_skjuta", jagSkaSkjuta ? "1" : "0"); } catch (e) { /* ignore */ }
+    updateJagSkaSkjutaUI();
+    syncMyShooterStatus();
+  });
+  btnJagArSkjutledare.addEventListener("click", function () {
+    amISkjutledare = !amISkjutledare;
+    try { window.localStorage.setItem("poangrakning_am_skjutledare", amISkjutledare ? "1" : "0"); } catch (e) { /* ignore */ }
+    if (amISkjutledare) {
+      officerInput.value = myShooterNameInput.value;
+      officerInput.dispatchEvent(new Event("change"));
+    }
+    updateSkjutledareButtonUI();
+    if (typeof refreshPinLock === "function") refreshPinLock();
+    if (typeof updateFinishButtonsVisibility === "function") updateFinishButtonsVisibility();
+  });
+  updateSkjutledareButtonUI();
+  updateJagSkaSkjutaUI();
+  syncMyShooterStatus();
+
+  // ---------------------------------------------------------------
+  // Plats / Skjutledare / Skytteform / Vapen (matchinfo, delat i molnet)
   // ---------------------------------------------------------------
   var locationInput = document.getElementById("match_location");
   var dateInput = document.getElementById("match_date");
   var officerInput = document.getElementById("match_officer");
+  var formTypeSelect = document.getElementById("match_form_type");
+  var formTypeCustom = document.getElementById("match_form_type_custom");
+  var STANDARD_FORM_TYPES = ["Fält", "Föreningseget", "Inskjutning", "IPSC", "Precision", "SRA", "Tjänstesportskytte", "TTS"];
+
+  function getFormTypeValue() {
+    if (formTypeSelect.value === "__custom__") return formTypeCustom.value.trim();
+    return formTypeSelect.value;
+  }
+  function setFormTypeValue(val) {
+    if (val && STANDARD_FORM_TYPES.indexOf(val) === -1) {
+      formTypeSelect.value = "__custom__";
+      formTypeCustom.style.display = "block";
+      formTypeCustom.value = val;
+    } else {
+      formTypeSelect.value = val || "";
+      formTypeCustom.style.display = "none";
+      formTypeCustom.value = "";
+    }
+  }
+  formTypeSelect.addEventListener("change", function () {
+    if (formTypeSelect.value === "__custom__") {
+      formTypeCustom.style.display = "block";
+      formTypeCustom.focus();
+      return;
+    }
+    formTypeCustom.style.display = "none";
+    formTypeCustom.value = "";
+    db.ref(dbPath("settings/matchInfo/formType")).set(formTypeSelect.value);
+    maybeUpdateAutoTitle();
+  });
+  formTypeCustom.addEventListener("change", function () {
+    db.ref(dbPath("settings/matchInfo/formType")).set(formTypeCustom.value.trim());
+    maybeUpdateAutoTitle();
+  });
+
+  function loadVapenPresetsLocal() {
+    try {
+      var raw = window.localStorage.getItem("poangrakning_vapen_presets");
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function saveVapenPresetsLocal(list) {
+    try { window.localStorage.setItem("poangrakning_vapen_presets", JSON.stringify(list)); } catch (e) { /* ignore */ }
+  }
+  function loadVapenSelectedLocal() {
+    try {
+      var raw = window.localStorage.getItem("poangrakning_vapen_selected");
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function saveVapenSelectedLocal(list) {
+    try { window.localStorage.setItem("poangrakning_vapen_selected", JSON.stringify(list)); } catch (e) { /* ignore */ }
+  }
+
+  var vapenChipsEl = document.getElementById("vapen-chips");
+  var vapenPresets = loadVapenPresetsLocal();
+  var vapenSelected = loadVapenSelectedLocal();
+
+  function renderVapenChips() {
+    vapenChipsEl.innerHTML = "";
+    vapenPresets.forEach(function (val) {
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip" + (vapenSelected.indexOf(val) !== -1 ? " chip-scored" : "");
+      chip.textContent = val;
+      chip.addEventListener("click", function () {
+        var idx = vapenSelected.indexOf(val);
+        if (idx === -1) vapenSelected.push(val); else vapenSelected.splice(idx, 1);
+        saveVapenSelectedLocal(vapenSelected);
+        renderVapenChips();
+      });
+      vapenChipsEl.appendChild(chip);
+    });
+  }
+  document.getElementById("btn-vapen-add").addEventListener("click", function () {
+    var val = prompt("Ange nytt vapen:");
+    if (val === null) return;
+    val = val.trim();
+    if (!val) return;
+    if (vapenPresets.indexOf(val) === -1) {
+      vapenPresets.push(val);
+      saveVapenPresetsLocal(vapenPresets);
+    }
+    if (vapenSelected.indexOf(val) === -1) vapenSelected.push(val);
+    saveVapenSelectedLocal(vapenSelected);
+    renderVapenChips();
+  });
+  renderVapenChips();
+
+  var manageVapenModalBackdrop = document.getElementById("manageVapenModalBackdrop");
+
+  function renderManageVapenList() {
+    var container = document.getElementById("manage-vapen-list");
+    container.innerHTML = "";
+
+    if (!vapenPresets.length) {
+      container.innerHTML = "<p class='meta-text'>Inga vapen sparade än.</p>";
+      return;
+    }
+
+    vapenPresets.forEach(function (name, idx) {
+      var row = document.createElement("div");
+      row.className = "settings-row";
+
+      var span = document.createElement("span");
+      span.style.width = "auto";
+      span.style.flex = "1";
+      span.style.overflow = "hidden";
+      span.style.textOverflow = "ellipsis";
+      span.style.whiteSpace = "nowrap";
+      span.textContent = name;
+
+      var editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className = "small-btn";
+      editBtn.style.marginLeft = "0";
+      editBtn.style.marginTop = "0";
+      editBtn.style.flex = "0 0 auto";
+      editBtn.textContent = "✏️";
+      editBtn.addEventListener("click", function () {
+        var newName = prompt("Ändra namn på vapnet:", name);
+        if (newName === null) return;
+        newName = newName.trim();
+        if (!newName) { alert("Namnet kan inte vara tomt."); return; }
+        var selIdx = vapenSelected.indexOf(name);
+        vapenPresets[idx] = newName;
+        saveVapenPresetsLocal(vapenPresets);
+        if (selIdx !== -1) {
+          vapenSelected[selIdx] = newName;
+          saveVapenSelectedLocal(vapenSelected);
+        }
+        renderVapenChips();
+        renderManageVapenList();
+      });
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "small-btn";
+      delBtn.style.marginLeft = "6px";
+      delBtn.style.marginTop = "0";
+      delBtn.style.flex = "0 0 auto";
+      delBtn.style.background = "var(--danger)";
+      delBtn.textContent = "🗑️";
+      delBtn.addEventListener("click", function () {
+        if (!confirm("Ta bort \"" + name + "\" från vapenlistan?")) return;
+        vapenPresets = vapenPresets.filter(function (v) { return v !== name; });
+        saveVapenPresetsLocal(vapenPresets);
+        if (vapenSelected.indexOf(name) !== -1) {
+          vapenSelected = vapenSelected.filter(function (v) { return v !== name; });
+          saveVapenSelectedLocal(vapenSelected);
+        }
+        renderVapenChips();
+        renderManageVapenList();
+      });
+
+      row.appendChild(span);
+      row.appendChild(editBtn);
+      row.appendChild(delBtn);
+      container.appendChild(row);
+    });
+  }
+
+  document.getElementById("btn-manage-vapen").addEventListener("click", function () {
+    renderManageVapenList();
+    manageVapenModalBackdrop.classList.add("open");
+  });
+  document.getElementById("btn-close-manage-vapen").addEventListener("click", function () {
+    manageVapenModalBackdrop.classList.remove("open");
+  });
+
+  // ---------------------------------------------------------------
+  // Biträden: namn som skjutledaren registrerar och som därefter får
+  // full åtkomst (motsvarande PIN/skjutledare) genom att bara skriva
+  // samma namn i Skytt-fältet - delat per matchkod, precis som
+  // Plats/Skjutledare-listorna hör till den specifika tävlingen.
+  // ---------------------------------------------------------------
+  var deputies = [];
+  var manageDeputiesModalBackdrop = document.getElementById("manageDeputiesModalBackdrop");
+
+  function isRegisteredDeputy(name) {
+    if (!name) return false;
+    var key = sanitizeKey(name);
+    return deputies.some(function (d) { return sanitizeKey(d) === key; });
+  }
+
+  if (db) {
+    db.ref(dbPath("settings/deputies")).on("value", function (snap) {
+      deputies = snap.val() || [];
+      if (manageDeputiesModalBackdrop && manageDeputiesModalBackdrop.classList.contains("open")) {
+        renderManageDeputiesList();
+      }
+      if (typeof refreshPinLock === "function") refreshPinLock();
+    });
+  }
+
+  function addDeputy(val) {
+    val = (val || "").trim();
+    if (!val) return;
+    if (isRegisteredDeputy(val)) { alert(val + " är redan registrerad som biträde."); return; }
+    var newList = deputies.slice();
+    newList.push(val);
+    db.ref(dbPath("settings/deputies")).set(newList).then(function () {
+      renderManageDeputiesList();
+    });
+  }
+
+  function renderManageDeputiesList() {
+    var container = document.getElementById("manage-deputies-list");
+    container.innerHTML = "";
+
+    var pickerTitle = document.createElement("p");
+    pickerTitle.className = "meta-text";
+    pickerTitle.style.marginTop = "0";
+    pickerTitle.textContent = "Välj bland registrerade skyttar:";
+    container.appendChild(pickerTitle);
+
+    var pickerRow = document.createElement("div");
+    pickerRow.className = "chip-row";
+    var shooterKeys = Object.keys(knownShooters || {});
+    shooterKeys.sort(function (a, b) { return getShooterAddedAt(knownShooters[a]) - getShooterAddedAt(knownShooters[b]); });
+    var officerKey = sanitizeKey(officerInput.value.trim());
+    var eligible = shooterKeys
+      .map(function (k) { return getShooterName(knownShooters[k]); })
+      .filter(function (name) { return !isRegisteredDeputy(name) && sanitizeKey(name) !== officerKey; });
+
+    if (!eligible.length) {
+      var noneP = document.createElement("p");
+      noneP.className = "meta-text";
+      noneP.textContent = "Inga fler skyttar att välja bland just nu.";
+      pickerRow.appendChild(noneP);
+    } else {
+      eligible.forEach(function (name) {
+        var chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "chip";
+        chip.textContent = name;
+        chip.addEventListener("click", function () { addDeputy(name); });
+        pickerRow.appendChild(chip);
+      });
+    }
+    container.appendChild(pickerRow);
+
+    var hr = document.createElement("hr");
+    container.appendChild(hr);
+
+    var listTitle = document.createElement("p");
+    listTitle.className = "meta-text";
+    listTitle.style.marginTop = "0";
+    listTitle.textContent = "Nuvarande biträden:";
+    container.appendChild(listTitle);
+
+    if (!deputies.length) {
+      var emptyP = document.createElement("p");
+      emptyP.className = "meta-text";
+      emptyP.textContent = "Inga biträden registrerade än.";
+      container.appendChild(emptyP);
+      return;
+    }
+
+    deputies.forEach(function (name) {
+      var row = document.createElement("div");
+      row.className = "settings-row";
+
+      var span = document.createElement("span");
+      span.style.width = "auto";
+      span.style.flex = "1";
+      span.style.overflow = "hidden";
+      span.style.textOverflow = "ellipsis";
+      span.style.whiteSpace = "nowrap";
+      span.textContent = name;
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "small-btn";
+      delBtn.style.marginLeft = "6px";
+      delBtn.style.marginTop = "0";
+      delBtn.style.flex = "0 0 auto";
+      delBtn.style.background = "var(--danger)";
+      delBtn.textContent = "🗑️";
+      delBtn.addEventListener("click", function () {
+        if (!isPinUnlocked()) { alert("Endast skjutledare kan ta bort biträden."); return; }
+        if (!confirm("Ta bort \"" + name + "\" som biträde?")) return;
+        var newList = deputies.filter(function (d) { return d !== name; });
+        db.ref(dbPath("settings/deputies")).set(newList);
+      });
+
+      row.appendChild(span);
+      row.appendChild(delBtn);
+      container.appendChild(row);
+    });
+  }
+
+  document.getElementById("btn-manage-deputies").addEventListener("click", function () {
+    if (!isPinUnlocked()) { alert("Endast skjutledare kan hantera biträden."); return; }
+    renderManageDeputiesList();
+    manageDeputiesModalBackdrop.classList.add("open");
+  });
+  document.getElementById("btn-close-manage-deputies").addEventListener("click", function () {
+    manageDeputiesModalBackdrop.classList.remove("open");
+  });
 
   if (db) {
     db.ref(dbPath("settings/matchInfo")).on("value", function (snap) {
@@ -2022,37 +2559,144 @@
       if (document.activeElement !== locationInput) locationInput.value = info.location || "";
       if (document.activeElement !== dateInput) dateInput.value = info.date || "";
       if (document.activeElement !== officerInput) officerInput.value = info.officer || "";
+      if (document.activeElement !== formTypeCustom) setFormTypeValue(info.formType || "");
     });
   }
   locationInput.addEventListener("change", function () {
     db.ref(dbPath("settings/matchInfo/location")).set(locationInput.value);
+    saveLocationPreset(locationInput.value);
+    maybeUpdateAutoTitle();
   });
   dateInput.addEventListener("change", function () {
     db.ref(dbPath("settings/matchInfo/date")).set(dateInput.value);
+    maybeUpdateAutoTitle();
   });
   officerInput.addEventListener("change", function () {
     db.ref(dbPath("settings/matchInfo/officer")).set(officerInput.value);
   });
 
   // ---------------------------------------------------------------
+  // Snabbval (chips) för Plats och Skjutledare på Start-sidan.
+  // Inget "Nytt"-val behövs - att skriva ett nytt namn i fältet
+  // sparar det automatiskt (se change-lyssnarna ovan). Skjutledare
+  // kan även tas bort från listan med sitt X.
+  // ---------------------------------------------------------------
+  function loadLocationPresetsLocal() {
+    try {
+      var raw = window.localStorage.getItem("poangrakning_location_presets");
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function saveLocationPresetsLocal(list) {
+    try { window.localStorage.setItem("poangrakning_location_presets", JSON.stringify(list)); } catch (e) { /* ignore */ }
+  }
+
+  var locationChipsEl = document.getElementById("location-chips");
+  var officerChipsEl = document.getElementById("officer-chips");
+  var locationPresets = loadLocationPresetsLocal();
+  var officerPresets = [];
+
+  function renderLocationChips() {
+    locationChipsEl.innerHTML = "";
+    locationPresets.forEach(function (val) {
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip" + (locationInput.value === val ? " chip-scored" : "");
+      chip.textContent = val;
+      chip.addEventListener("click", function () {
+        locationInput.value = val;
+        locationInput.dispatchEvent(new Event("change"));
+        renderLocationChips();
+      });
+      locationChipsEl.appendChild(chip);
+    });
+  }
+
+  function renderOfficerChips() {
+    officerChipsEl.innerHTML = "";
+    officerPresets.forEach(function (val) {
+      var wrap = document.createElement("span");
+      wrap.style.display = "inline-flex";
+      wrap.style.alignItems = "center";
+      wrap.style.marginRight = "6px";
+      wrap.style.marginBottom = "6px";
+
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip" + (officerInput.value === val ? " chip-scored" : "");
+      chip.style.marginRight = "0";
+      chip.textContent = val;
+      chip.addEventListener("click", function () {
+        officerInput.value = val;
+        officerInput.dispatchEvent(new Event("change"));
+        renderOfficerChips();
+      });
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.textContent = "×";
+      delBtn.title = "Ta bort " + val;
+      delBtn.style.cssText = "margin-left:2px;border:none;background:var(--danger);color:#fff;border-radius:50%;width:20px;height:20px;font-size:13px;line-height:1;cursor:pointer;flex-shrink:0;";
+      delBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        if (!confirm("Ta bort \"" + val + "\" från sparade skjutledare?")) return;
+        var idx = officerPresets.indexOf(val);
+        if (idx !== -1) {
+          officerPresets.splice(idx, 1);
+          db.ref(dbPath("settings/presets/skjutledare")).set(officerPresets);
+        }
+      });
+
+      wrap.appendChild(chip);
+      wrap.appendChild(delBtn);
+      officerChipsEl.appendChild(wrap);
+    });
+  }
+
+  function saveLocationPreset(val) {
+    val = (val || "").trim();
+    if (!val) return;
+    if (locationPresets.indexOf(val) === -1) {
+      locationPresets.push(val);
+      saveLocationPresetsLocal(locationPresets);
+      renderLocationChips();
+    }
+  }
+
+  renderLocationChips();
+
+  if (db) {
+    db.ref(dbPath("settings/presets/skjutledare")).on("value", function (snap) {
+      officerPresets = snap.val() || [];
+      renderOfficerChips();
+    });
+  }
+
+  // ---------------------------------------------------------------
   // Flikar
   // ---------------------------------------------------------------
+  var startTab = document.getElementById("start-tab");
   var inputTab = document.getElementById("input-tab");
   var leaderboardTab = document.getElementById("leaderboard-tab");
   var settingsTab = document.getElementById("settings-tab");
+  var btnStart = document.getElementById("btn-start");
   var btnInput = document.getElementById("btn-input");
   var btnLeaderboard = document.getElementById("btn-leaderboard");
   var btnSettings = document.getElementById("btn-settings");
 
   function switchTab(tab) {
+    startTab.style.display = tab === "start" ? "block" : "none";
     inputTab.style.display = tab === "input" ? "block" : "none";
     leaderboardTab.style.display = tab === "leaderboard" ? "block" : "none";
     settingsTab.style.display = tab === "settings" ? "block" : "none";
+    btnStart.classList.toggle("active", tab === "start");
     btnInput.classList.toggle("active", tab === "input");
     btnLeaderboard.classList.toggle("active", tab === "leaderboard");
     btnSettings.classList.toggle("active", tab === "settings");
     if (tab === "leaderboard") loadLeaderboard();
   }
+  btnStart.addEventListener("click", function () { switchTab("start"); });
+  document.getElementById("btn-goto-registrera").addEventListener("click", function () { switchTab("input"); });
   btnInput.addEventListener("click", function () { switchTab("input"); });
   btnLeaderboard.addEventListener("click", function () { switchTab("leaderboard"); });
   btnSettings.addEventListener("click", function () {
@@ -2155,9 +2799,13 @@
 
     keys.sort(function (a, b) { return getShooterAddedAt(knownShooters[a]) - getShooterAddedAt(knownShooters[b]); });
 
+    var unlocked = isPinUnlocked();
+    var myKey = sanitizeKey(myShooterNameInput.value.trim());
+
     keys.forEach(function (key) {
       var name = getShooterName(knownShooters[key]);
       var addedAt = getShooterAddedAt(knownShooters[key]) || Date.now();
+      var isMine = key === myKey;
       var row = document.createElement("div");
       row.className = "settings-row";
 
@@ -2168,6 +2816,14 @@
       span.style.textOverflow = "ellipsis";
       span.style.whiteSpace = "nowrap";
       span.textContent = name;
+      row.appendChild(span);
+
+      // Utan PIN/skjutledarstatus/biträdesstatus kan en skytt bara redigera
+      // eller ta bort sitt EGET namn - inte andras.
+      if (!unlocked && !isMine) {
+        container.appendChild(row);
+        return;
+      }
 
       var editBtn = document.createElement("button");
       editBtn.type = "button";
@@ -2188,6 +2844,10 @@
           db.ref(dbPath("shooters/" + key)).remove();
           db.ref(dbPath("shooters/" + newKey)).set({ name: newName, addedAt: addedAt });
         }
+        if (isMine) {
+          myShooterNameInput.value = newName;
+          try { window.localStorage.setItem("poangrakning_my_name", newName); } catch (e) { /* ignore */ }
+        }
       });
 
       var delBtn = document.createElement("button");
@@ -2203,7 +2863,6 @@
         db.ref(dbPath("shooters/" + key)).remove();
       });
 
-      row.appendChild(span);
       row.appendChild(editBtn);
       row.appendChild(delBtn);
       container.appendChild(row);
@@ -2264,6 +2923,9 @@
   var timeSecEl = document.getElementById("time_sec");
 
   function isPinUnlocked() {
+    if (!currentPin) return true;
+    if (amISkjutledare && isConnectedToSharedCode) return true;
+    if (isConnectedToSharedCode && isRegisteredDeputy(myShooterNameInput.value.trim())) return true;
     return pinField.value !== "" && pinField.value === currentPin;
   }
 
@@ -2284,9 +2946,31 @@
     document.getElementById("match_location").disabled = !unlocked;
     document.getElementById("match_date").disabled = !unlocked;
     document.getElementById("match_officer").disabled = !unlocked;
+    document.getElementById("match_form_type").disabled = !unlocked;
+    document.getElementById("match_form_type_custom").disabled = !unlocked;
+
+    // En skytt utan PIN/skjutledarstatus/biträdesstatus kan inte lägga till
+    // godtyckliga skyttar - den knappen döljs helt för dem. Deras eget namn
+    // läggs ändå automatiskt till via "Jag ska skjuta".
+    var addShooterBtn = document.getElementById("btn-add-shooter");
+    if (addShooterBtn) addShooterBtn.style.display = unlocked ? "" : "none";
+
+    // Redigera/ta bort-knapparna i "Hantera skyttar" beror också på detta -
+    // uppdatera listan om den råkar vara öppen just nu.
+    if (typeof renderManageShootersList === "function" && manageShootersModalBackdrop && manageShootersModalBackdrop.classList.contains("open")) {
+      renderManageShootersList();
+    }
   }
 
   pinField.addEventListener("input", refreshPinLock);
+  pinField.addEventListener("change", function () {
+    // Om jag är skjutledare sätter min inskrivna PIN-kod direkt den delade
+    // koden för hela matchkoden - andra skyttar som skriver samma kod får
+    // då samma befogenheter som mig.
+    if (amISkjutledare && db) {
+      db.ref(dbPath("settings/pin")).set(pinField.value);
+    }
+  });
   refreshPinLock();
 
   // ---------------------------------------------------------------
@@ -2993,8 +3677,8 @@
   // ---------------------------------------------------------------
   // Export: CSV (alla stationer + Total) och Utskrift/PDF (alla flikar)
   // ---------------------------------------------------------------
-  document.getElementById("btn-export-csv").addEventListener("click", function () {
-    db.ref(dbPath("matches/match1")).once("value").then(function (snapshot) {
+  function downloadLeaderboardCSV() {
+    return db.ref(dbPath("matches/match1")).once("value").then(function (snapshot) {
       var allData = snapshot.val() || {};
       var rows = [["Station", "Skytt", "Poäng", "Straff", "Bonus", "Netto", "Träffbild", "HitFactor", "Tid", "Stationspoäng", "MaxPoäng", "Procent"]];
 
@@ -3038,16 +3722,20 @@
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
+  }
+
+  document.getElementById("btn-export-csv").addEventListener("click", function () {
+    downloadLeaderboardCSV();
   });
 
-  document.getElementById("btn-print").addEventListener("click", function () {
+  function printLeaderboardPDF() {
     var reads = stationsList.map(function (station) {
       return db.ref(dbPath("matches/match1/" + station.id)).once("value").then(function (snap) {
         return { station: station, data: snap.val() };
       });
     });
 
-    Promise.all(reads).then(function (results) {
+    return Promise.all(reads).then(function (results) {
       var container = document.getElementById("print-view");
       container.innerHTML = "";
 
@@ -3110,8 +3798,236 @@
 
       window.print();
     });
+  }
+
+  document.getElementById("btn-print").addEventListener("click", function () {
+    printLeaderboardPDF();
   });
 
+  // ---------------------------------------------------------------
+  // Personlig loggbok: hör till SKYTTEN (den här enheten), inte till
+  // matchkoden. Sparas lokalt (localStorage) precis som Skytt/Vapen/
+  // Plats, så den följer med oavsett vilken tävling/träning man är med
+  // i. Loggar den enskilda skyttens egna avslutade pass/deltaganden.
+  // ---------------------------------------------------------------
+  function loadPersonalLog() {
+    try {
+      var raw = window.localStorage.getItem("poangrakning_personal_log");
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function savePersonalLog(list) {
+    try { window.localStorage.setItem("poangrakning_personal_log", JSON.stringify(list)); } catch (e) { /* ignore */ }
+  }
+
+  function updateFinishButtonsVisibility() {
+    var finishSessionBtn = document.getElementById("btn-finish-session");
+    var finishMyBtn = document.getElementById("btn-finish-my-participation");
+    if (!finishSessionBtn || !finishMyBtn) return;
+    finishSessionBtn.style.display = amISkjutledare ? "" : "none";
+    finishMyBtn.style.display = amISkjutledare ? "none" : "";
+  }
+  updateFinishButtonsVisibility();
+
+  function buildLogEntryFromCurrentInfo() {
+    return {
+      datum: dateInput.value || todayISO(),
+      plats: locationInput.value.trim(),
+      skytteaktivitet: getFormTypeValue(),
+      vapen: vapenSelected.join(" / "),
+      skjutledare: officerInput.value.trim(),
+      kommentar: document.getElementById("log_comment").value.trim(),
+      createdAt: Date.now()
+    };
+  }
+
+  document.getElementById("btn-finish-session").addEventListener("click", function () {
+    if (!confirm("⚠️ VARNING Du avslutar nu passet.\n\nDagens pass sparas i din personliga loggbok, och laddas ner som backup + uppdaterad Excel-fil. Därefter TAS ALLA STATIONER, SKYTTAR OCH RESULTAT BORT och matchkoden kopplas bort — precis som \"Ta bort alla stationer\" plus urkoppling — redo för nästa pass.\n\nSäkerställ att allt är klart innan du fortsätter. Vill du fortsätta?")) return;
+
+    var downloadFirstPromise = Promise.resolve();
+    if (confirm("Vill du ladda ner topplistan som PDF innan du avslutar passet?")) {
+      downloadFirstPromise = printLeaderboardPDF();
+    }
+
+    if (!isPinUnlocked()) {
+      var pinVal = prompt("Ange PIN-kod för att bekräfta och avsluta passet:");
+      if (pinVal === null) return;
+      if (pinVal !== currentPin) { alert("Fel PIN-kod! Passet avslutades inte."); return; }
+    }
+
+    var entry = buildLogEntryFromCurrentInfo();
+
+    downloadFirstPromise.then(function () {
+      var before = loadPersonalLog();
+      if (before.length) {
+        exportPersonalLogToExcel(before, true);
+      }
+      var after = before.slice();
+      after.push(entry);
+      savePersonalLog(after);
+      exportPersonalLogToExcel(after, false);
+
+      // Städar bort HELA kodens nod (resultat, skyttar, matchinfo, stationer,
+      // PIN, biträden, hjärtslag m.m.) så inget ligger kvar och skräpar eller
+      // riskerar krocka om koden återanvänds av misstag. Rensar även den
+      // privata enhetskoden man landar på efter urkoppling, så inget gammalt
+      // Plats/Datum/Skytteform kan dyka upp igen där heller.
+      var privateCode = getOrCreatePrivateDeviceCode();
+      return db.ref("codes/" + matchCode).remove().then(function () {
+        if (privateCode !== matchCode) {
+          return db.ref("codes/" + privateCode).remove();
+        }
+      });
+    }).then(function () {
+      document.getElementById("log_comment").value = "";
+      try {
+        window.localStorage.removeItem("poangrakning_match_code");
+        window.localStorage.removeItem("poangrakning_established_as_skjutledare");
+      } catch (e) { /* ignore */ }
+      alert("Passet sparat i din loggbok och nollställt! Backup + uppdaterad Excel-fil laddades ner. Matchkoden är nu bortkopplad - redo för nästa pass.");
+      location.reload();
+    }).catch(function (err) {
+      alert("Något gick fel: " + err.message);
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // Avsluta mitt deltagande: för en skytt som ANSLUTIT (inte skjutledare).
+  // Avslutar bara sin EGEN medverkan - tar bort det egna namnet från
+  // skyttlistan (så inga fler resultat kan registreras på en), loggar
+  // ett personligt loggboksinlägg, men rör varken tidigare sparade
+  // resultat, stationer eller matchkoden. Aktiviteten fortsätter som
+  // vanligt för alla andra - avslutas helt först när skjutledaren
+  // trycker "Avsluta passet".
+  // ---------------------------------------------------------------
+  document.getElementById("btn-finish-my-participation").addEventListener("click", function () {
+    if (!confirm("Avsluta ditt eget deltagande?\n\nDitt namn tas bort från skyttlistan så inga fler resultat kan registreras på dig. Redan sparade resultat på dig påverkas INTE. Ett inlägg sparas i din personliga loggbok. Aktiviteten fortsätter som vanligt för övriga skyttar.")) return;
+
+    var entry = buildLogEntryFromCurrentInfo();
+    var before = loadPersonalLog();
+    if (before.length) {
+      exportPersonalLogToExcel(before, true);
+    }
+    var after = before.slice();
+    after.push(entry);
+    savePersonalLog(after);
+    exportPersonalLogToExcel(after, false);
+
+    var val = myShooterNameInput.value.trim();
+    if (val && db) {
+      var key = sanitizeKey(val);
+      db.ref(dbPath("shooters/" + key)).remove();
+    }
+    jagSkaSkjuta = false;
+    try { window.localStorage.setItem("poangrakning_jag_ska_skjuta", "0"); } catch (e) { /* ignore */ }
+    if (typeof updateJagSkaSkjutaUI === "function") updateJagSkaSkjutaUI();
+
+    document.getElementById("log_comment").value = "";
+    showConfirm("Ditt deltagande är avslutat och sparat i din loggbok. Aktiviteten fortsätter för övriga.");
+  });
+
+  document.getElementById("btn-fetch-log").addEventListener("click", function () {
+    var entries = loadPersonalLog();
+    if (!entries.length) {
+      alert("Inga sparade pass i din loggbok ännu.");
+      return;
+    }
+
+    var container = document.getElementById("print-view");
+    container.innerHTML = "";
+
+    var title = document.createElement("h1");
+    title.textContent = "Skyttelogg för: " + (myShooterNameInput.value.trim() || "-");
+    container.appendChild(title);
+
+    var table = document.createElement("table");
+    table.style.width = "100%";
+    table.style.borderCollapse = "collapse";
+    table.style.fontSize = "13px";
+
+    var thead = document.createElement("thead");
+    var headRow = document.createElement("tr");
+    ["Nr", "Datum", "Plats", "Skytteaktivitet", "Vapen", "Skjutledare", "Kommentar"].forEach(function (h) {
+      var th = document.createElement("th");
+      th.textContent = h;
+      th.style.cssText = "border-bottom:2px solid #333;text-align:left;padding:4px 8px;";
+      headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+    table.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+    entries.forEach(function (p, idx) {
+      var tr = document.createElement("tr");
+      [
+        idx + 1,
+        p.datum || "-",
+        p.plats || "-",
+        p.skytteaktivitet || "-",
+        p.vapen || "-",
+        p.skjutledare || "-",
+        p.kommentar || ""
+      ].forEach(function (val) {
+        var td = document.createElement("td");
+        td.textContent = val;
+        td.style.cssText = "border-bottom:1px solid #ccc;padding:4px 8px;";
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    container.appendChild(table);
+
+    window.print();
+  });
+
+  function todayISO() {
+    var d = new Date();
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var day = String(d.getDate()).padStart(2, "0");
+    return d.getFullYear() + "-" + m + "-" + day;
+  }
+
+  function timestampForFilename() {
+    var d = new Date();
+    function p(n) { return String(n).padStart(2, "0"); }
+    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + "_" + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
+  }
+
+  function exportPersonalLogToExcel(entries, isBackup) {
+    if (typeof XLSX === "undefined") {
+      alert("Excel-exportmodulen kunde inte laddas (kontrollera internetanslutningen). Passet är dock sparat i loggboken.");
+      return;
+    }
+
+    var flatRows = entries.map(function (p, idx) {
+      return {
+        "Nr": idx + 1,
+        "Datum": p.datum || "",
+        "Plats": p.plats || "",
+        "Skytteaktivitet": p.skytteaktivitet || "",
+        "Vapen": p.vapen || "",
+        "Skjutledare": p.skjutledare || "",
+        "Kommentar": p.kommentar || ""
+      };
+    });
+
+    var ws = XLSX.utils.json_to_sheet(flatRows);
+    ws["!cols"] = [
+      { wch: 6 }, { wch: 12 }, { wch: 24 }, { wch: 18 }, { wch: 28 }, { wch: 18 }, { wch: 30 }
+    ];
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, isBackup ? "Backup" : "Skyttelogg");
+
+    // Huvudfilen har alltid SAMMA filnamn (så den skriver över föregående version
+    // med hela, uppdaterade historiken). Backupfilen får ett unikt tidsstämplat
+    // namn varje gång, så gamla backuper aldrig skrivs över.
+    var myName = myShooterNameInput.value.trim() || "skytt";
+    var fname = isBackup
+      ? "skyttelogg_" + sanitizeKey(myName) + "_backup_" + timestampForFilename() + ".xlsx"
+      : "skyttelogg_" + sanitizeKey(myName) + ".xlsx";
+    XLSX.writeFile(wb, fname);
+  }
 })();
 </script>
 </body>
