@@ -2472,7 +2472,6 @@
     syncMyShooterStatus();
   });
 
-  updatePinFieldsForRole();
   syncMyShooterStatus();
 
   // ---------------------------------------------------------------
@@ -3088,6 +3087,7 @@
 
   pinField.addEventListener("input", refreshPinLock);
   refreshPinLock();
+  updatePinFieldsForRole();
 
   // ---------------------------------------------------------------
   // Snabbhantering av serier direkt från Mata in (kräver PIN)
