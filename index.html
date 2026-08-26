@@ -196,6 +196,16 @@
     background:#F5F7FA; border-radius:8px; padding:8px 10px; font-family:'Courier New', monospace;
     font-size:13px; max-height:120px; overflow-y:auto; color:#333;
   }
+  .skjuttimer-slider-wrap { position:relative; }
+  .skjuttimer-slider-tick {
+    position:absolute; top:4px; bottom:4px; width:2px; background:#c0392b;
+    transform:translateX(-50%); pointer-events:none;
+  }
+  .skjuttimer-slider-labels { position:relative; height:14px; margin-top:2px; }
+  .skjuttimer-slider-labels span {
+    position:absolute; top:0; transform:translateX(-50%); font-size:10px; color:#c0392b;
+    font-weight:bold; white-space:nowrap;
+  }
   .skjuttimer-meter {
     position:relative; height:10px; background:#E4E7EB; border-radius:5px; margin-top:8px; overflow:hidden;
   }
@@ -488,10 +498,18 @@
       <button class="btn-neutral" id="btn-skjuttimer-reset" type="button" style="width:100%;margin-top:8px;">↺ Nollställ</button>
 
       <div class="form-group" style="margin-top:16px;">
-        <label>Känslighet (mikrofon)</label>
-        <input type="range" id="skjuttimer-sensitivity" min="1" max="100" value="45" style="width:100%;">
+        <label>Känslighet (mikrofon) — <span id="skjuttimer-sensitivity-db">-12 dBFS</span></label>
+        <div class="skjuttimer-slider-wrap">
+          <input type="range" id="skjuttimer-sensitivity" min="1" max="100" value="78" style="width:100%;">
+          <div class="skjuttimer-slider-tick" id="skjuttimer-tick-click"></div>
+          <div class="skjuttimer-slider-tick" id="skjuttimer-tick-ar15"></div>
+        </div>
+        <div class="skjuttimer-slider-labels">
+          <span id="skjuttimer-label-click">Klick</span>
+          <span id="skjuttimer-label-ar15">Skott</span>
+        </div>
         <div class="skjuttimer-meter"><div class="skjuttimer-meter-fill" id="skjuttimer-meter-fill"></div></div>
-        <div class="hint">Dra reglaget så tröskeln (den vita strecket) ligger strax över bakgrundsljudet men under ett skotts ljudnivå. Testa gärna genom att klappa i händerna.</div>
+        <div class="hint">Dra reglaget så tröskeln ligger strax över bakgrundsljudet men under skottets/klickets ljudnivå. Markeringarna ovan visar ungefär var ett torravtryckklick respektive ett skarpt skott brukar ligga - verkliga nivåer varierar med avstånd, vapen och mikrofon. Testa gärna genom att klappa i händerna medan du tittar på mätaren.</div>
       </div>
 
       <div class="modal-actions" style="margin-top:14px;">
@@ -4490,6 +4508,57 @@
     return skjuttimerBeepBuffer ? skjuttimerBeepBuffer.duration * 1000 : 550;
   }
 
+  // Reglaget (1-100) mappas mot en tröskel i dBFS (decibel relativt digitalt
+  // fullt utslag) på en logaritmisk skala, från -50 dBFS (mycket känsligt -
+  // fångar det tysta klicket från ett torravtryck) till -1 dBFS (mycket
+  // okänsligt - kräver ett riktigt skarpt skott för att räknas, bra i
+  // blåsig/ekande miljö). Ett vanligt pistol-/gevärsskott ligger oftast
+  // omkring -10 till 0 dBFS på några meters håll, medan ett torravtryck
+  // (slagstift/kolv utan skarp ammunition) ofta bara når -35 till -50 dBFS -
+  // därför behövs det mycket bredare spannet jämfört med tidigare.
+  var SKJUTTIMER_MIN_DB = -50; // känsligaste läget (reglage = 1)
+  var SKJUTTIMER_MAX_DB = -1;  // okänsligaste läget (reglage = 100)
+
+  function skjuttimerSliderToDb(sliderValue) {
+    var norm = Math.max(1, Math.min(100, sliderValue)) / 100;
+    return SKJUTTIMER_MIN_DB + norm * (SKJUTTIMER_MAX_DB - SKJUTTIMER_MIN_DB);
+  }
+  function skjuttimerDbToAmplitude(db) {
+    return Math.pow(10, db / 20);
+  }
+  function updateSkjuttimerSensitivityLabel() {
+    var db = skjuttimerSliderToDb(parseFloat(skjuttimerSensitivityEl.value));
+    var label = document.getElementById("skjuttimer-sensitivity-db");
+    if (label) label.textContent = db.toFixed(0) + " dBFS";
+  }
+  skjuttimerSensitivityEl.addEventListener("input", updateSkjuttimerSensitivityLabel);
+
+  // Referensmarkeringar på reglaget: ungefär var ett torravtryck (klick)
+  // respektive ett skarpt skott brukar hamna.
+  // Räknas ut från samma dB-skala som resten av känslighetsreglaget, så de
+  // alltid stämmer om skalan någonsin justeras. OBS: bara ungefärliga
+  // referensvärden - verklig nivå beror på avstånd, vapen och mikrofon.
+  var SKJUTTIMER_REFERENCE_POINTS = [
+    { db: -38, tickId: "skjuttimer-tick-click", labelId: "skjuttimer-label-click" },
+    { db: -3, tickId: "skjuttimer-tick-ar15", labelId: "skjuttimer-label-ar15" }
+  ];
+  function skjuttimerDbToSliderPercent(db) {
+    var sliderVal = ((db - SKJUTTIMER_MIN_DB) / (SKJUTTIMER_MAX_DB - SKJUTTIMER_MIN_DB)) * 100;
+    var min = parseFloat(skjuttimerSensitivityEl.min);
+    var max = parseFloat(skjuttimerSensitivityEl.max);
+    return ((sliderVal - min) / (max - min)) * 100;
+  }
+  function positionSkjuttimerReferenceMarkers() {
+    SKJUTTIMER_REFERENCE_POINTS.forEach(function (ref) {
+      var pct = skjuttimerDbToSliderPercent(ref.db);
+      var tick = document.getElementById(ref.tickId);
+      var label = document.getElementById(ref.labelId);
+      if (tick) tick.style.left = pct + "%";
+      if (label) label.style.left = pct + "%";
+    });
+  }
+  positionSkjuttimerReferenceMarkers();
+
   function skjuttimerMonitorLoop() {
     if (!skjuttimerAnalyser) return;
     skjuttimerAnalyser.getByteTimeDomainData(skjuttimerDataArray);
@@ -4500,7 +4569,7 @@
     }
     skjuttimerMeterFillEl.style.width = Math.min(100, peak * 130) + "%";
 
-    var threshold = skjuttimerSensitivityEl.value / 100 * 0.9 + 0.05; // 0.05 - 0.95
+    var threshold = skjuttimerDbToAmplitude(skjuttimerSliderToDb(parseFloat(skjuttimerSensitivityEl.value)));
     var now = performance.now();
     if (skjuttimerListening && peak >= threshold && (now - skjuttimerLastShotAt) > getSkjuttimerRefractoryMs()) {
       skjuttimerLastShotAt = now;
@@ -4513,7 +4582,17 @@
 
   function skjuttimerRequestMic() {
     if (skjuttimerStream) return loadSkjuttimerBeepBuffer();
-    return navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+    return navigator.mediaDevices.getUserMedia({
+      audio: {
+        // Stänger av automatisk förstärkning/brusreducering - annars drar
+        // telefonen automatiskt upp tystare ljud mot en målnivå, vilket gör
+        // känslighetsreglaget opålitligt (allt känns "för känsligt" oavsett
+        // var man ställer det).
+        autoGainControl: false,
+        noiseSuppression: false,
+        echoCancellation: false
+      }
+    }).then(function (stream) {
       skjuttimerStream = stream;
       skjuttimerAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
       var source = skjuttimerAudioCtx.createMediaStreamSource(stream);
@@ -4629,6 +4708,7 @@
 
   document.getElementById("btn-open-skjuttimer").addEventListener("click", function () {
     skjuttimerModalBackdrop.classList.add("open");
+    updateSkjuttimerSensitivityLabel();
   });
 
   // ---------------------------------------------------------------
@@ -4654,12 +4734,13 @@
       skjuttimerDelayGroup.style.display = skjuttimerMode === "normal" ? "block" : "none";
       skjuttimerModeHintEl.textContent = SKJUTTIMER_MODE_HINTS[skjuttimerMode];
       if (skjuttimerMode === "dryfire") {
-        skjuttimerSensitivityEl.value = 20; // känsligare standardläge för tystare klick
+        skjuttimerSensitivityEl.value = 24; // ca -38 dBFS: känsligt nog för ett torravtrycksklick
       } else {
-        skjuttimerSensitivityEl.value = 45;
+        skjuttimerSensitivityEl.value = 78; // ca -12 dBFS: kräver ett riktigt skott, undviker bakgrundsljud
       }
+      updateSkjuttimerSensitivityLabel();
     });
-  });
+  }); 
 
   // ---------------------------------------------------------------
   // Fördröjning innan pip (bara i Normal-läge): Slumpad (standard) /
