@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Skytte</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1E3D59">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Skytte">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
 <style>
   :root { --primary:#1E3D59; --secondary:#17B890; --bg:#F5F7FA; --dark:#111; --danger:#E53E3E; --gold:#B7791F; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin:0; padding:15px; color: var(--dark); }
@@ -114,7 +121,7 @@
 
   /* Höger ratt (till vänster om antennen): välj mottagare */
   .radio-photo-knob {
-    position:absolute; left:50.6%; top:33.9%; width:12%; padding-bottom:12%; height:0;
+    position:absolute; left:50.75%; top:19.4%; width:12%; padding-bottom:12%; height:0;
     transform:translate(-50%,-50%); border-radius:50%; background:rgba(255,255,255,0.06);
     border:2px solid rgba(255,255,255,0.55); cursor:pointer;
   }
@@ -122,7 +129,7 @@
 
   /* Vänster ratt: stäng radion, tillbaka till Registrera */
   .radio-photo-knob-left {
-    position:absolute; left:38%; top:34.5%; width:12%; padding-bottom:12%; height:0;
+    position:absolute; left:22.2%; top:19.3%; width:12%; padding-bottom:12%; height:0;
     transform:translate(-50%,-50%); border-radius:50%; background:rgba(255,255,255,0.06);
     border:2px solid rgba(255,255,255,0.55); cursor:pointer;
   }
@@ -511,6 +518,12 @@
       <div class="modal-actions" style="margin-top:14px;">
         <button class="btn-confirm" id="btn-skjuttimer-use-time" type="button" style="flex:1;">✔️ Använd totaltid i Tid-fältet</button>
       </div>
+
+      <div style="margin-top:16px;">
+        <p class="meta-text" style="margin-bottom:4px;">Senaste tider:</p>
+        <div id="skjuttimer-history" class="skjuttimer-splits">Inga sparade tider än.</div>
+      </div>
+
       <button class="btn-neutral" id="btn-close-skjuttimer" type="button" style="width:100%;margin-top:8px;">Stäng</button>
     </div>
   </div>
@@ -4553,7 +4566,48 @@
     });
   });
 
+  // ---------------------------------------------------------------
+  // Sparar de 10 senaste tiderna från skjuttimern, tillsammans med
+  // skyttens namn och vilken övning (station) det gällde. Personligt,
+  // sparas lokalt på enheten.
+  // ---------------------------------------------------------------
+  function loadSkjuttimerHistory() {
+    try {
+      var raw = window.localStorage.getItem("poangrakning_skjuttimer_history");
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) { return []; }
+  }
+  function saveSkjuttimerHistory(list) {
+    try { window.localStorage.setItem("poangrakning_skjuttimer_history", JSON.stringify(list)); } catch (e) { /* ignore */ }
+  }
+  function addSkjuttimerHistoryEntry(totalTimeMs) {
+    var list = loadSkjuttimerHistory();
+    var station = getSelectedStation();
+    list.unshift({
+      name: myShooterNameInput.value.trim() || "Okänd",
+      station: station ? station.name : "-",
+      time: formatSkjuttimerSeconds(totalTimeMs),
+      ts: Date.now()
+    });
+    if (list.length > 10) list = list.slice(0, 10);
+    saveSkjuttimerHistory(list);
+    renderSkjuttimerHistory();
+  }
+  function renderSkjuttimerHistory() {
+    var el = document.getElementById("skjuttimer-history");
+    var list = loadSkjuttimerHistory();
+    if (!list.length) {
+      el.textContent = "Inga sparade tider än.";
+      return;
+    }
+    el.innerHTML = list.map(function (e) {
+      return escapeHtml(e.name) + " — " + escapeHtml(e.station) + ": " + e.time + " s";
+    }).join("<br>");
+  }
+  renderSkjuttimerHistory();
+
   function skjuttimerStopInternal() {
+    var wasRunning = skjuttimerRunning;
     skjuttimerRunning = false;
     skjuttimerListening = false;
     btnSkjuttimerStart.disabled = false;
@@ -4561,6 +4615,11 @@
     if (skjuttimerParTimeoutId) {
       clearTimeout(skjuttimerParTimeoutId);
       skjuttimerParTimeoutId = null;
+    }
+    // Sparar bara till historiken en gång per faktisk körning - inte igen om
+    // man t.ex. trycker "Nollställ" eller "Stäng" efter att redan ha stoppat.
+    if (wasRunning && skjuttimerShots.length) {
+      addSkjuttimerHistoryEntry(skjuttimerShots[skjuttimerShots.length - 1]);
     }
     skjuttimerStatusEl.textContent = skjuttimerShots.length
       ? "Klar - " + skjuttimerShots.length + " skott registrerade"
@@ -5132,6 +5191,17 @@
   }
 
 })();
+
+// Registrerar service worker för PWA-funktionalitet (installerbar app-ikon,
+// fungerar visa som en riktig app, viss offline-reserv). Fungerar bara om
+// sw.js och manifest.json ligger i samma mapp som index.html på GitHub Pages.
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function (err) {
+      console.log("Service worker kunde inte registreras:", err);
+    });
+  });
+}
 </script>
 </body>
 </html>
