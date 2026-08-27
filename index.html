@@ -132,7 +132,7 @@
 
   /* Höger ratt (till vänster om antennen): välj mottagare */
   .radio-photo-knob {
-    position:absolute; left:57.46%; top:19.97%; width:12%; padding-bottom:12%; height:0;
+    position:absolute; left:48.91%; top:28.04%; width:12%; padding-bottom:12%; height:0;
     transform:translate(-50%,-50%); border-radius:50%; background:rgba(255,255,255,0.06);
     border:2px solid rgba(255,255,255,0.55); cursor:pointer;
   }
@@ -140,7 +140,7 @@
 
   /* Vänster ratt: stäng radion, tillbaka till Registrera */
   .radio-photo-knob-left {
-    position:absolute; left:32.02%; top:18.62%; width:12%; padding-bottom:12%; height:0;
+    position:absolute; left:32.42%; top:28.85%; width:12%; padding-bottom:12%; height:0;
     transform:translate(-50%,-50%); border-radius:50%; background:rgba(255,255,255,0.06);
     border:2px solid rgba(255,255,255,0.55); cursor:pointer;
   }
@@ -261,7 +261,8 @@
 
     <div class="form-group">
       <label>Skytt</label>
-      <input type="text" id="my_shooter_name" placeholder="Ditt namn">
+      <input type="text" id="my_shooter_name" placeholder="Ditt namn" disabled style="background:#E4E7EB;color:#555;">
+      <div class="hint" style="margin-top:6px;">Detta är ditt användarnamn - andra skyttar ser det. Byt namn under Inställningar.</div>
     </div>
     <div class="form-group">
       <label>Plats</label>
@@ -300,26 +301,20 @@
       <button type="button" class="small-btn" id="btn-vapen-add" style="margin-left:0;margin-top:8px;">➕ Lägg till vapen</button>
       <button type="button" class="small-btn" id="btn-manage-vapen" style="margin-left:6px;margin-top:8px;">✏️ Hantera vapen</button>
     </div>
+
+    <button id="btn-goto-registrera" class="action-btn" type="button">Fortsätt till Registrera →</button>
+
     <div class="form-group">
       <label id="connect_match_code_label">Ange matchens eller träningens namn</label>
       <input type="text" id="connect_match_code" placeholder="Lämna tomt om du inte anslutit dig">
-      <div class="hint" style="margin-top:6px;">Alla som skriver in samma namn delar samma match/träning live. Är namnet nytt blir du automatiskt skjutledare för det. Lämnas fältet tomt är du inte ansluten till någon.</div>
+      <button type="button" class="small-btn" id="btn-suggest-match-code" style="margin-left:0;margin-top:8px;">🎲 Föreslå namn</button>
+      <div class="hint" style="margin-top:6px;">Alla som skriver in samma namn delar samma match/träning live. Är namnet nytt blir du automatiskt skjutledare för det. Lämnas fältet tomt är du inte ansluten till någon. Namnet måste innehålla minst 3 bokstäver och 2 siffror (t.ex. "Falk42") - det gör det svårare för obehöriga att hitta till matchen av misstag.</div>
     </div>
     <div class="form-group">
       <label id="pin_label">PIN-kod</label>
       <input type="text" id="pin" placeholder="Ange PIN" autocomplete="off">
-      <div id="pin_bitrade_group" style="display:none;margin-top:10px;">
-        <label>PIN-kod (Biträde)</label>
-        <input type="text" id="pin_bitrade" placeholder="Ange PIN för biträden" autocomplete="off">
-      </div>
-      <div class="checkbox-row" id="jag_ska_skjuta_row" style="display:none;margin-top:10px;">
-        <input type="checkbox" id="jag_ska_skjuta_checkbox">
-        <span>Jag ska skjuta</span>
-      </div>
       <div class="hint" id="pin_hint" style="margin-top:6px;">Ange rätt PIN-kod för att få tillgång till fler funktioner än att titta på Topplistan.</div>
     </div>
-
-    <button id="btn-goto-registrera" class="action-btn" type="button">Fortsätt till Registrera →</button>
 
     <div class="modal-actions" style="margin-top:20px;">
       <button class="btn-neutral" id="btn-open-qr" type="button">🔗 QR/länk</button>
@@ -339,17 +334,6 @@
     </div>
 
     <div class="info-box" id="station-info"></div>
-
-    <div class="form-group" style="display:flex;gap:8px;">
-      <div style="flex:1;">
-        <label>Avstånd (denna registrering)</label>
-        <input type="text" id="quick_distance" placeholder="t.ex. 25 m" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;">
-      </div>
-      <div style="flex:1;">
-        <label>Vapen (denna registrering)</label>
-        <button type="button" id="btn-quick-weapon-toggle" class="btn-neutral" style="width:100%;margin-top:0;">🔫 Gevär</button>
-      </div>
-    </div>
 
     <div class="modal-actions" style="margin-bottom:15px;">
       <button type="button" class="btn-neutral" id="btn-add-serie-here">➕ Lägg till en serie</button>
@@ -413,7 +397,7 @@
       <div id="log-comment-image-preview" class="chip-row" style="margin-top:8px;"></div>
     </div>
     <button id="btn-finish-session" class="action-btn" type="button" style="background:var(--gold);">Avsluta passet</button>
-    <button id="btn-finish-my-participation" class="action-btn" type="button" style="background:var(--gold);">Avsluta mitt deltagande</button>
+    <button id="btn-finish-my-participation" class="action-btn" type="button" style="background:var(--gold);">📖 Logga detta pass</button>
     <button id="btn-fetch-log" class="btn-neutral" type="button" style="margin-top:10px;width:100%;">Hämta loggbok</button>
   </div>
 
@@ -541,11 +525,6 @@
         <button class="btn-confirm" id="btn-skjuttimer-use-time" type="button" style="flex:1;">✔️ Använd totaltid i Tid-fältet</button>
       </div>
 
-      <div id="skjuttimer-torrtraning-wrap" style="display:none;margin-top:10px;">
-        <div class="hint" id="skjuttimer-torrtraning-hint"></div>
-        <button class="btn-confirm" id="btn-skjuttimer-create-series" type="button" style="width:100%;margin-top:6px;">➕ Skapa serier med uppmätta tider</button>
-      </div>
-
       <div style="margin-top:16px;">
         <p class="meta-text" style="margin-bottom:4px;">Senaste tider:</p>
         <div id="skjuttimer-history" class="skjuttimer-splits">Inga sparade tider än.</div>
@@ -576,6 +555,14 @@
     <div class="info-box" style="margin-top:15px;">
       <p style="margin:0 0 8px 0;font-size:13px;">Lägger till/uppdaterar de 12 fördefinierade standardstationerna (Up drill, Double tap, El Presidente m.fl.) i din mallista. Egna eller andra mallar du redan skapat påverkas inte och raderas inte. Behövs oftast bara en gång.</p>
       <button id="btn-recover-legacy" class="small-btn" style="margin:0;">📑 Hämta bas-stationer</button>
+    </div>
+
+    <hr>
+    <h2 style="margin-top:0;">Mitt användarnamn</h2>
+    <p class="meta-text" style="margin-top:0;">Namnet andra skyttar ser dig som. Byter du namn här följer din loggbok, dina vänner och din chatt med automatiskt - de är knutna till dig, inte till namnet.</p>
+    <div style="display:flex;gap:8px;">
+      <input type="text" id="change_username_input" placeholder="Nytt namn" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;">
+      <button type="button" class="small-btn" id="btn-change-username" style="margin:0;">Spara</button>
     </div>
 
     <hr>
@@ -771,6 +758,18 @@
     <div class="modal-actions">
       <button class="btn-confirm" id="btn-station-offer-add" type="button">✅ Lägg till i mina mallar</button>
       <button class="btn-cancel" id="btn-station-offer-decline" type="button">❌ Neka</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIRST-TIME USERNAME MODAL -->
+<div class="modal-backdrop" id="firstTimeUsernameBackdrop">
+  <div class="modal-box" style="text-align:left;">
+    <h3>Välkommen!</h3>
+    <p class="meta-text" style="margin-top:0;">Innan du kör igång - välj ett användarnamn (namn eller smeknamn). Andra skyttar ser det här namnet, så välj gärna något de känner igen dig på. Du kan byta det senare under Inställningar.</p>
+    <input type="text" id="first_time_username_input" placeholder="Ditt namn eller smeknamn" style="width:100%;padding:10px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;">
+    <div class="modal-actions">
+      <button class="btn-confirm" id="btn-first-time-username-save" type="button">Kom igång</button>
     </div>
   </div>
 </div>
@@ -1068,6 +1067,22 @@
     return id;
   }
 
+  // Permanent, tyst ID för PERSONLIG molndata (loggbok, vänner, chatt,
+  // stationsförslag). Namnet i Skytt-fältet är bara en visningsetikett
+  // kopplad till detta ID - byter man namn mitt i en aktivitet följer
+  // loggbok/vänner ändå med, istället för att gå förlorade eller krocka
+  // med en annan persons data (som hände innan detta fanns).
+  function getOrCreateUserId() {
+    var id = "";
+    try { id = window.localStorage.getItem("poangrakning_user_id") || ""; } catch (e) { /* ignore */ }
+    if (!id) {
+      id = "u" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+      try { window.localStorage.setItem("poangrakning_user_id", id); } catch (e) { /* ignore */ }
+    }
+    return id;
+  }
+  var myUserId = getOrCreateUserId();
+
   var storedMatchCode = "";
   try {
     storedMatchCode = window.localStorage.getItem("poangrakning_match_code") || "";
@@ -1092,6 +1107,26 @@
   }
 
   var connectMatchCodeInput = document.getElementById("connect_match_code");
+
+  // Kräver minst 3 bokstäver och 2 siffror i matchnamnet - gör det svårare
+  // för en obehörig att råka gissa/hitta till en pågående match av misstag
+  // (jämfört med t.ex. bara "Träning" eller "Test").
+  function isValidMatchCodeFormat(code) {
+    var letterCount = (code.match(/[a-zA-ZåäöÅÄÖ]/g) || []).length;
+    var digitCount = (code.match(/[0-9]/g) || []).length;
+    return letterCount >= 3 && digitCount >= 2;
+  }
+
+  var MATCH_CODE_WORDS = ["Falk", "Örn", "Prick", "Stål", "Kula", "Fenix", "Lodjur", "Varg", "Björn", "Hök", "Krut", "Skott", "Rex", "Alfa", "Tapper", "Hjort"];
+  function generateSuggestedMatchCode() {
+    var word = MATCH_CODE_WORDS[Math.floor(Math.random() * MATCH_CODE_WORDS.length)];
+    var num = Math.floor(10 + Math.random() * 90);
+    return word + num;
+  }
+  document.getElementById("btn-suggest-match-code").addEventListener("click", function () {
+    connectMatchCodeInput.value = generateSuggestedMatchCode();
+  });
+
   if (connectMatchCodeInput) {
     connectMatchCodeInput.value = storedMatchCode;
     connectMatchCodeInput.addEventListener("change", function () {
@@ -1106,6 +1141,11 @@
       }
       var cleaned = sanitizeMatchCode(newCode);
       if (!cleaned) { alert("Namnet kan inte vara tomt."); connectMatchCodeInput.value = storedMatchCode; return; }
+      if (!isValidMatchCodeFormat(cleaned)) {
+        alert("Matchnamnet måste innehålla minst 3 bokstäver och 2 siffror, t.ex. \"Falk42\". Testa knappen \"🎲 Föreslå namn\" om du vill ha ett färdigt förslag.");
+        connectMatchCodeInput.value = storedMatchCode;
+        return;
+      }
       if (!db) { alert("Ingen databasanslutning - kan inte kontrollera matchnamnet just nu."); return; }
 
       function finishConnect(isCreator) {
@@ -1132,7 +1172,7 @@
             // Markerar matchen som etablerad direkt (innan sidan laddas om),
             // så en annan enhet som råkar skriva samma namn nästan samtidigt
             // inte också tror att namnet är ledigt och blir "skapare".
-            return db.ref(newCodePrefix + "settings/pinSkyttar").set("");
+            return db.ref(newCodePrefix + "settings/established").set(true);
           });
         }).then(function () {
           finishConnect(true);
@@ -1141,11 +1181,10 @@
         });
       }
 
-      // Avgör om matchen/träningen redan finns: en etablerad match har
-      // alltid en Skyttar-PIN satt (även om den råkar vara tom sträng
-      // finns nyckeln). Finns den inte alls är namnet nytt.
-      db.ref("codes/" + cleaned + "/settings/pinSkyttar").once("value").then(function (pinSnap) {
-        var exists = pinSnap.val() !== null;
+      // Avgör om matchen/träningen redan finns via en dedikerad markör -
+      // finns den inte alls är namnet nytt (ledigt att skapa).
+      db.ref("codes/" + cleaned + "/settings/established").once("value").then(function (estSnap) {
+        var exists = estSnap.val() === true;
 
         if (!exists) {
           // Nytt namn - jag blir skjutledare/skapare av matchen.
@@ -1153,26 +1192,34 @@
           return;
         }
 
-        // Namnet finns redan - jag ansluter till den befintliga matchen.
-        // Kollar samtidigt om den verkar övergiven (ingen aktivitet på
-        // länge), så gammal skräpdata kan rensas istället för att krocka.
-        db.ref("codes/" + cleaned + "/meta/lastActive").once("value").then(function (snap) {
-          var lastActive = snap.val();
-          var isStale = lastActive && (Date.now() - lastActive > STALE_CODE_MS);
-          if (isStale) {
-            var lastDateText = new Date(lastActive).toLocaleString("sv-SE");
-            var wipe = confirm(
-              "Matchen/träningen \"" + cleaned + "\" verkar övergiven - senast använd " + lastDateText + ".\n\n" +
-              "Tryck OK för att rensa den gamla datan och bli skjutledare för ett nytt, tomt namn med samma kod.\n" +
-              "Tryck Avbryt för att istället ansluta till den befintliga (troligen inaktuella) datan."
-            );
-            if (wipe) {
-              db.ref("codes/" + cleaned).remove().then(migrateThenCreate).catch(migrateThenCreate);
-              return;
-            }
-          } else {
-            alert("Matchen/träningen \"" + cleaned + "\" finns redan. Du ansluter till den befintliga.");
+        // Namnet finns redan. En match rensas automatiskt om det gått mer
+        // än 7 dagar sedan dess ANGIVNA datum (matchInfo.date) OCH den inte
+        // varit aktiv (skrivits till) under samma period - annars ansluter
+        // vi bara till den befintliga.
+        Promise.all([
+          db.ref("codes/" + cleaned + "/settings/matchInfo").once("value"),
+          db.ref("codes/" + cleaned + "/meta/lastActive").once("value")
+        ]).then(function (results) {
+          var matchInfo = results[0].val() || {};
+          var lastActive = results[1].val();
+          var SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+
+          var matchDateMs = null;
+          if (matchInfo.date) {
+            var parsed = new Date(matchInfo.date + "T00:00:00");
+            if (!isNaN(parsed.getTime())) matchDateMs = parsed.getTime();
           }
+          var pastDatePlus7Days = matchDateMs !== null && (Date.now() - matchDateMs > SEVEN_DAYS_MS);
+          var inactiveLately = !lastActive || (Date.now() - lastActive > SEVEN_DAYS_MS);
+
+          if (pastDatePlus7Days && inactiveLately) {
+            // Rensas automatiskt - inget behöver bekräftas, jag blir
+            // skjutledare för det nu tomma namnet.
+            db.ref("codes/" + cleaned).remove().then(migrateThenCreate).catch(migrateThenCreate);
+            return;
+          }
+
+          alert("Matchen/träningen \"" + cleaned + "\" finns redan. Du ansluter till den befintliga.");
           finishConnect(false);
         }).catch(function () { finishConnect(false); });
       }).catch(function (err) {
@@ -1595,7 +1642,6 @@
       renderStationSelects();
       renderStationSettingsCards();
       renderStationInfoPanel();
-      if (typeof refreshQuickFieldsForStation === "function") refreshQuickFieldsForStation();
     });
   }
 
@@ -1723,36 +1769,9 @@
     if (typeof bonusCounter !== "undefined" && bonusCounter) bonusCounter.reset();
   }
 
-  // ---------------------------------------------------------------
-  // Snabbval av avstånd/vapen direkt på Registrera-sidan: avstånd och
-  // vapen kan variera fram och tillbaka under en aktivitet och individuellt
-  // mellan skyttar (t.ex. samma station skjuts både med gevär och pistol),
-  // så de går att ändra snabbt utan att behöva gå in och ändra själva
-  // stationens grundinställning. Sparas med varje enskild registrering.
-  // ---------------------------------------------------------------
-  var quickDistanceInput = document.getElementById("quick_distance");
-  var quickWeaponToggleBtn = document.getElementById("btn-quick-weapon-toggle");
-  var quickWeaponValue = "Gevär";
-
-  function updateQuickWeaponButtonUI() {
-    quickWeaponToggleBtn.textContent = quickWeaponValue === "Pistol" ? "🔫 Pistol" : "🔫 Gevär";
-  }
-  quickWeaponToggleBtn.addEventListener("click", function () {
-    quickWeaponValue = quickWeaponValue === "Pistol" ? "Gevär" : "Pistol";
-    updateQuickWeaponButtonUI();
-  });
-
-  function refreshQuickFieldsForStation() {
-    var station = getSelectedStation();
-    quickDistanceInput.value = station ? (station.distance || "") : "";
-    quickWeaponValue = (station && station.weapon === "Pistol") ? "Pistol" : "Gevär";
-    updateQuickWeaponButtonUI();
-  }
-
   stageSelect.addEventListener("change", function () {
     renderStationInfoPanel();
     resetEntryFieldsOnStationChange();
-    refreshQuickFieldsForStation();
   });
 
   // ---------------------------------------------------------------
@@ -2593,25 +2612,18 @@
   }
 
   // ---------------------------------------------------------------
-  // PIN-koder: två nivåer. "Biträde" ger full åtkomst (motsvarar tidigare
-  // "skjutledare/biträde"), "Skyttar" ger bara rätt att registrera egna
-  // resultat. currentPin = biträdesnivån (används av alla äldre PIN-skydd
-  // i appen: Inställningar, nollställningar, radera resultat m.m.).
+  // PIN-kod: EN delad kod ger full åtkomst (skjutledare/biträde, samma
+  // behörighet oavsett vem som satte den). Utan rätt kod kan man bara
+  // titta på Topplistan - ingen kan längre registrera sina egna resultat
+  // på egen hand, det är förbehållet den som har koden.
   // ---------------------------------------------------------------
-  var currentPinSkyttar = "";
   if (db) {
-    db.ref(dbPath("settings/pinBitrade")).on("value", function (snap) {
+    db.ref(dbPath("settings/pin")).on("value", function (snap) {
       currentPin = snap.val() || "";
-      var bitradeField = document.getElementById("pin_bitrade");
-      if (bitradeField && document.activeElement !== bitradeField) bitradeField.value = currentPin;
+      var pinFieldEl = document.getElementById("pin");
+      if (iAmCreator && pinFieldEl && document.activeElement !== pinFieldEl) pinFieldEl.value = currentPin;
       if (typeof refreshPinLock === "function") refreshPinLock();
-      if (typeof updateRoleFromPinField === "function") updateRoleFromPinField();
-    });
-    db.ref(dbPath("settings/pinSkyttar")).on("value", function (snap) {
-      currentPinSkyttar = snap.val() || "";
-      var pinField2 = document.getElementById("pin");
-      if (iAmCreator && pinField2 && document.activeElement !== pinField2) pinField2.value = currentPinSkyttar;
-      if (typeof updateRoleFromPinField === "function") updateRoleFromPinField();
+      if (typeof updatePinHint === "function") updatePinHint();
     });
   }
 
@@ -2619,111 +2631,96 @@
   // Skytt (eget namn, sparas lokalt på enheten till nästa tillfälle)
   // ---------------------------------------------------------------
   var myShooterNameInput = document.getElementById("my_shooter_name");
+  var savedMyName = "";
   try {
-    var savedMyName = window.localStorage.getItem("poangrakning_my_name");
+    savedMyName = window.localStorage.getItem("poangrakning_my_name") || "";
     if (savedMyName) myShooterNameInput.value = savedMyName;
   } catch (e) { /* localStorage kan vara blockerat */ }
 
+  // Första gången appen öppnas (inget namn sparat än) måste man välja ett
+  // användarnamn innan man kan använda appen - det blir sedan låst som
+  // Skytt-namnet (grått fält på Start) och kan bara ändras under
+  // Inställningar, så det aldrig råkar bytas av misstag mitt i en aktivitet.
+  if (!savedMyName) {
+    document.getElementById("firstTimeUsernameBackdrop").classList.add("open");
+  }
+  function finishUsernameSetup(name) {
+    myShooterNameInput.value = name;
+    try { window.localStorage.setItem("poangrakning_my_name", name); } catch (e) { /* ignore */ }
+    if (typeof claimNameForUserId === "function") claimNameForUserId();
+    if (typeof migratePersonalLogIfNeeded === "function") migratePersonalLogIfNeeded();
+    if (typeof migratePersonalLogToUserIdIfNeeded === "function") migratePersonalLogToUserIdIfNeeded();
+    if (typeof refreshFriendsAndOffers === "function") refreshFriendsAndOffers();
+    document.getElementById("firstTimeUsernameBackdrop").classList.remove("open");
+  }
+  document.getElementById("btn-first-time-username-save").addEventListener("click", function () {
+    var name = document.getElementById("first_time_username_input").value.trim();
+    if (!name) { alert("Skriv in ett namn för att komma igång."); return; }
+    finishUsernameSetup(name);
+  });
+  document.getElementById("first_time_username_input").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { document.getElementById("btn-first-time-username-save").click(); }
+  });
+
+  // Byt användarnamn (under Inställningar) - enda stället namnet går att
+  // ändra, så det inte råkar bytas av misstag på Start-sidan mitt i en
+  // aktivitet (det var precis det som orsakade buggar tidigare).
+  document.getElementById("btn-change-username").addEventListener("click", function () {
+    var input = document.getElementById("change_username_input");
+    var name = input.value.trim();
+    if (!name) { alert("Skriv in ett nytt namn."); return; }
+    if (!confirm("Byt användarnamn till \"" + name + "\"?")) return;
+    finishUsernameSetup(name);
+    input.value = "";
+    alert("Namnet är ändrat till \"" + name + "\".");
+  });
+
   // ---------------------------------------------------------------
-  // Roll: bestäms automatiskt utifrån matchnamnet och PIN-koden.
+  // Roll: bara två nivåer.
   //  - iAmCreator: jag var först med det här matchnamnet -> skjutledare,
-  //    full åtkomst, sätter båda PIN-koderna för andra att använda.
-  //  - annars bestäms rollen av vilken PIN-kod som skrivits in:
-  //      matchar Biträde-PIN  -> "bitrade" (full åtkomst, valfritt skjuta)
-  //      matchar Skyttar-PIN  -> "skytt"   (läggs alltid till som skytt)
-  //      inget/fel            -> "viewer"  (bara Topplistan, ingen åtkomst)
+  //    full åtkomst, sätter PIN-koden för andra att använda.
+  //  - annars: full åtkomst om rätt PIN-kod skrivits in, annars bara
+  //    Topplistan (view-only). Se isPinUnlocked().
   // ---------------------------------------------------------------
   var iAmCreator = false;
   try { iAmCreator = window.localStorage.getItem("poangrakning_established_as_skjutledare") === "1"; } catch (e) { /* ignore */ }
   if (!isConnectedToSharedCode) iAmCreator = false;
 
-  var myRole = "viewer"; // "creator" hanteras separat via iAmCreator
-  var jagSkaSkjuta = false;
-  try { jagSkaSkjuta = window.localStorage.getItem("poangrakning_jag_ska_skjuta") === "1"; } catch (e) { /* ignore */ }
-
   var pinFieldLabelEl = document.getElementById("pin_label");
-  var pinBitradeGroupEl = document.getElementById("pin_bitrade_group");
-  var pinBitradeInput = document.getElementById("pin_bitrade");
-  var jagSkaSkjutaRowEl = document.getElementById("jag_ska_skjuta_row");
-  var jagSkaSkjutaCheckbox = document.getElementById("jag_ska_skjuta_checkbox");
   var pinHintEl = document.getElementById("pin_hint");
 
-  function syncMyShooterStatus() {
-    var val = myShooterNameInput.value.trim();
-    if (!val || !db) return;
-    var key = sanitizeKey(val);
-    var shouldBeShooter = iAmCreator ? jagSkaSkjuta
-      : myRole === "skytt" ? true
-      : myRole === "bitrade" ? jagSkaSkjuta
-      : false;
-    if (shouldBeShooter) {
-      db.ref(dbPath("shooters/" + key)).once("value").then(function (snap) {
-        var addedAt = getShooterAddedAt(snap.val()) || Date.now();
-        db.ref(dbPath("shooters/" + key)).set({ name: val, addedAt: addedAt });
-      });
+  function updatePinHint() {
+    if (iAmCreator) {
+      pinHintEl.textContent = "Du är skjutledare för den här matchen/träningen. Sätt en PIN-kod och dela den med biträden du vill ge samma behörighet.";
+    } else if (isPinUnlocked()) {
+      pinHintEl.textContent = "Du har full åtkomst (samma som skjutledare).";
     } else {
-      db.ref(dbPath("shooters/" + key)).remove();
-    }
-  }
-
-  function updateRoleFromPinField() {
-    if (iAmCreator) return; // skjutledaren styrs inte av PIN-fältet
-    var typed = document.getElementById("pin").value;
-    if (typed && currentPinSkyttar && typed === currentPinSkyttar) {
-      myRole = "skytt";
-    } else if (typed && currentPin && typed === currentPin) {
-      myRole = "bitrade";
-    } else {
-      myRole = "viewer";
-    }
-    jagSkaSkjutaRowEl.style.display = myRole === "bitrade" ? "block" : "none";
-    if (myRole === "viewer") {
       pinHintEl.textContent = "Ange rätt PIN-kod för att få tillgång till fler funktioner än att titta på Topplistan.";
-    } else if (myRole === "skytt") {
-      pinHintEl.textContent = "Du är registrerad som skytt och läggs till på Registrera-sidan.";
-    } else {
-      pinHintEl.textContent = "Du har biträdes-åtkomst (samma som skjutledare).";
     }
-    syncMyShooterStatus();
-    if (typeof refreshPinLock === "function") refreshPinLock();
-    if (typeof updateFinishButtonsVisibility === "function") updateFinishButtonsVisibility();
-    if (typeof restrictTabsForViewer === "function") restrictTabsForViewer();
   }
-  document.getElementById("pin").addEventListener("input", updateRoleFromPinField);
-  jagSkaSkjutaCheckbox.addEventListener("change", function () {
-    jagSkaSkjuta = jagSkaSkjutaCheckbox.checked;
-    try { window.localStorage.setItem("poangrakning_jag_ska_skjuta", jagSkaSkjuta ? "1" : "0"); } catch (e) { /* ignore */ }
-    syncMyShooterStatus();
-  });
 
   function updatePinFieldsForRole() {
     if (iAmCreator) {
-      pinFieldLabelEl.textContent = "PIN-kod (Skyttar)";
-      pinBitradeGroupEl.style.display = "block";
-      jagSkaSkjutaRowEl.style.display = "block";
-      pinHintEl.textContent = "Du är skjutledare för den här matchen/träningen. Sätt en PIN-kod för skyttar och en för biträden, och dela dem med rätt personer.";
-      jagSkaSkjutaCheckbox.checked = jagSkaSkjuta;
-
+      pinFieldLabelEl.textContent = "PIN-kod";
       document.getElementById("pin").addEventListener("change", function () {
-        if (db) db.ref(dbPath("settings/pinSkyttar")).set(document.getElementById("pin").value);
-      });
-      pinBitradeInput.addEventListener("change", function () {
-        if (db) db.ref(dbPath("settings/pinBitrade")).set(pinBitradeInput.value);
+        if (db) db.ref(dbPath("settings/pin")).set(document.getElementById("pin").value);
       });
     } else {
       pinFieldLabelEl.textContent = "PIN-kod";
-      pinBitradeGroupEl.style.display = "none";
-      updateRoleFromPinField();
     }
+    updatePinHint();
   }
+
+  document.getElementById("pin").addEventListener("input", function () {
+    if (typeof refreshPinLock === "function") refreshPinLock();
+    if (typeof updatePinHint === "function") updatePinHint();
+    if (typeof updateFinishButtonsVisibility === "function") updateFinishButtonsVisibility();
+  });
 
   myShooterNameInput.addEventListener("change", function () {
     var val = myShooterNameInput.value.trim();
     try { window.localStorage.setItem("poangrakning_my_name", val); } catch (e) { /* ignore */ }
-    syncMyShooterStatus();
   });
-
-  syncMyShooterStatus();
 
   // ---------------------------------------------------------------
   // Plats / Skjutledare / Skytteform / Vapen (matchinfo, delat i molnet)
@@ -3034,43 +3031,7 @@
   var btnSamband = document.getElementById("btn-samband");
   var btnSettings = document.getElementById("btn-settings");
 
-  // ---------------------------------------------------------------
-  // Kom ihåg var man var: sparar vilken flik som senast var öppen och hur
-  // långt ner man scrollat på den, så att appen kan hoppa tillbaka dit om
-  // sidan laddas om (t.ex. när telefonens webbläsare startar om appen efter
-  // att ha legat i bakgrunden en stund). "Inställningar" undantas med
-  // flit - den fliken kräver PIN-kod och appen ska aldrig hoppa dit
-  // automatiskt utan att PIN angetts.
-  // ---------------------------------------------------------------
-  var TAB_SCROLL_STORAGE_PREFIX = "poangrakning_scroll_";
-  var LAST_TAB_STORAGE_KEY = "poangrakning_last_tab";
-  var currentActiveTab = "start";
-  var scrollSaveTimeoutId = null;
-
-  function saveScrollForTab(tab) {
-    try { window.localStorage.setItem(TAB_SCROLL_STORAGE_PREFIX + tab, String(window.scrollY || 0)); } catch (e) { /* ignore */ }
-  }
-  function restoreScrollForTab(tab) {
-    var y = 0;
-    try { y = parseInt(window.localStorage.getItem(TAB_SCROLL_STORAGE_PREFIX + tab), 10) || 0; } catch (e) { /* ignore */ }
-    if (!y) return;
-    // Liten fördröjning så att flikens innehåll (t.ex. topplista/samband,
-    // som laddar data asynkront) hinner renderas innan vi scrollar dit.
-    setTimeout(function () { window.scrollTo(0, y); }, 60);
-  }
-  window.addEventListener("scroll", function () {
-    clearTimeout(scrollSaveTimeoutId);
-    scrollSaveTimeoutId = setTimeout(function () { saveScrollForTab(currentActiveTab); }, 300);
-  }, { passive: true });
-
   function switchTab(tab) {
-    // Skyttar utan giltig PIN-kod ("viewer") får bara titta på Topplistan.
-    if (isConnectedToSharedCode && !iAmCreator && myRole === "viewer" && (tab === "input" || tab === "samband")) {
-      alert("Ange rätt PIN-kod på Start-sidan för att få tillgång till den här sidan.");
-      tab = "leaderboard";
-    }
-    // Sparar scrollpositionen för fliken vi lämnar, innan vi byter bort ifrån den.
-    saveScrollForTab(currentActiveTab);
     startTab.style.display = tab === "start" ? "block" : "none";
     inputTab.style.display = tab === "input" ? "block" : "none";
     leaderboardTab.style.display = tab === "leaderboard" ? "block" : "none";
@@ -3084,13 +3045,6 @@
     // På Samband ska bara radiobilden synas - inga flikknappar, titel eller
     // latmask/skottskada-knappar ska skymma den.
     document.getElementById("app-chrome").style.display = tab === "samband" ? "none" : "block";
-    currentActiveTab = tab;
-    // "Inställningar" kräver PIN-kod och ska aldrig återställas automatiskt
-    // vid nästa appstart - sparar därför inte den som senaste flik.
-    try {
-      if (tab !== "settings") window.localStorage.setItem(LAST_TAB_STORAGE_KEY, tab);
-    } catch (e) { /* ignore */ }
-    restoreScrollForTab(tab);
     if (tab === "leaderboard") {
       loadLeaderboard();
       if (typeof renderRecentLogActivity === "function") renderRecentLogActivity();
@@ -3098,13 +3052,6 @@
     if (tab === "samband") {
       if (typeof initSambandIfNeeded === "function") initSambandIfNeeded();
       if (typeof showSambandMainView === "function") showSambandMainView();
-    }
-  }
-  function restrictTabsForViewer() {
-    if (isConnectedToSharedCode && !iAmCreator && myRole === "viewer") {
-      if (inputTab.style.display === "block" || sambandTab.style.display === "block") {
-        switchTab("leaderboard");
-      }
     }
   }
   btnStart.addEventListener("click", function () { switchTab("start"); });
@@ -3350,7 +3297,8 @@
   function isPinUnlocked() {
     if (!isConnectedToSharedCode) return true; // solo/privat läge (ingen delad kod) = alltid full åtkomst
     if (iAmCreator) return true; // skjutledare (den som skapade matchen)
-    return myRole === "bitrade"; // bara biträde ger admin-åtkomst - inte skytt eller viewer
+    var typed = document.getElementById("pin").value;
+    return !!typed && typed === currentPin;
   }
 
   function refreshPinLock() {
@@ -3365,7 +3313,9 @@
     document.getElementById("btn-bonus-undo").disabled = !unlocked;
 
     grossPtsEl.style.opacity = unlocked ? "1" : "0.5";
+    grossPtsEl.disabled = !unlocked;
     timeSecEl.style.opacity = unlocked ? "1" : "0.5";
+    if (typeof refreshTimeFieldState === "function") refreshTimeFieldState();
 
     document.getElementById("match_location").disabled = !unlocked;
     document.getElementById("match_date").disabled = !unlocked;
@@ -3637,10 +3587,13 @@
   var useStationPointsRowEl = document.getElementById("use_station_points_row");
 
   function refreshTimeFieldState() {
+    if (typeof useTimeToggleEl === "undefined" || !useTimeToggleEl) return;
     var useTime = useTimeToggleEl.checked;
-    document.getElementById("time_sec").disabled = !useTime;
-    document.getElementById("btn-open-skjuttimer").disabled = !useTime;
-    useStationPointsToggleEl.disabled = !useTime;
+    var unlocked = typeof isPinUnlocked === "function" ? isPinUnlocked() : true;
+    useTimeToggleEl.disabled = !unlocked;
+    document.getElementById("time_sec").disabled = !useTime || !unlocked;
+    document.getElementById("btn-open-skjuttimer").disabled = !useTime || !unlocked;
+    useStationPointsToggleEl.disabled = !useTime || !unlocked;
     useStationPointsRowEl.style.opacity = useTime ? "1" : "0.5";
     if (!useTime) {
       useStationPointsToggleEl.checked = false;
@@ -3760,8 +3713,8 @@
     if (!db) { alert("Ingen databasanslutning."); return; }
     if (!stationsList.length) { alert("Inga stationer finns ännu. Lägg till en station under Inställningar innan du registrerar resultat."); return; }
 
-    if (!isPinUnlocked() && myRole !== "skytt") {
-      alert("Fel PIN-kod! Du har inte behörighet att spara.");
+    if (!isPinUnlocked()) {
+      alert("Endast skjutledare eller biträde kan registrera resultat.");
       return;
     }
 
@@ -3817,8 +3770,6 @@
         hf: parseFloat(hitFactor.toFixed(4)),
         hitBreakdown: lastHitBreakdown,
         useStationPoints: useStationPointsToggleEl.checked,
-        distance: quickDistanceInput.value.trim(),
-        weapon: quickWeaponValue,
         savedAt: savedAt
       }).then(function () {
         db.ref(dbPath("shooters/" + shooterKey)).once("value").then(function (shooterSnap) {
@@ -3969,7 +3920,6 @@
           '<strong>' + escapeHtml(s.name) + '</strong>' +
           '<div class="meta-text">Poäng: ' + s.net + ' (' + s.gross + ' - ' + s.penalty + ' straff + ' + (s.bonus || 0) + ' bonus)' + (noTimeForThis ? '' : ' | Tid: ' + s.time + 's') + '</div>' +
           (breakdownText ? '<div class="meta-text">Träffbild: ' + escapeHtml(breakdownText) + '</div>' : '') +
-          ((s.distance || s.weapon) ? '<div class="meta-text">' + escapeHtml([s.distance, s.weapon].filter(Boolean).join(" · ")) + '</div>' : '') +
           '<div class="meta-text" style="color:var(--secondary);font-weight:bold;">Stationspoäng: ' + item.stagePoints.toFixed(2) + ' av ' + maxPts + ' (' + item.pct.toFixed(1) + '%)</div>' +
         '</div>';
 
@@ -4570,7 +4520,6 @@
     }
     skjuttimerSplitsEl.innerHTML = lines.join("<br>");
     skjuttimerSplitsEl.scrollTop = skjuttimerSplitsEl.scrollHeight;
-    if (typeof refreshSkjuttimerTorrtraningUI === "function") refreshSkjuttimerTorrtraningUI();
   }
 
   function playBeep() {
@@ -4733,9 +4682,6 @@
   function runSkjuttimerParCycle(repsLeft, parMs, pauseMs) {
     skjuttimerParTimeoutId = setTimeout(function () {
       if (!skjuttimerRunning) return;
-      // Par-tiden är slut: sluta lyssna direkt. Annars registreras både
-      // stoppsignalen (pipet) och eventuellt ljud under pausen som skott.
-      skjuttimerListening = false;
       playBeep();
       repsLeft--;
       if (repsLeft <= 0) {
@@ -4748,12 +4694,6 @@
         if (!skjuttimerRunning) return;
         playBeep();
         skjuttimerStatusEl.textContent = "🔊 Ny par-tid!";
-        // Väntar tills den nya startsignalen klingat ut innan skottlyssningen
-        // slås på igen - precis som vid den allra första starten - så att
-        // signalen själv aldrig räknas som ett skott.
-        setTimeout(function () {
-          if (skjuttimerRunning) skjuttimerListening = true;
-        }, getSkjuttimerBeepDurationMs() + 80);
         runSkjuttimerParCycle(repsLeft, parMs, pauseMs);
       }, pauseMs);
     }, parMs);
@@ -4882,168 +4822,9 @@
     skjuttimerModalBackdrop.classList.remove("open");
   });
 
-  // ---------------------------------------------------------------
-  // Torrträning + Par-tid: skapar automatiskt en serie per upprepning, där
-  // varje seties "Tid" blir den faktiskt uppmätta splittiden för just den
-  // upprepningen (inte den inställda par-tiden). Känns igen på att
-  // stationens namn innehåller ordet "torrträning".
-  // ---------------------------------------------------------------
-  function isTorrtraningStation(station) {
-    return !!(station && typeof station.name === "string" &&
-      station.name.toLowerCase().indexOf("torrträning") !== -1);
-  }
-
-  function refreshSkjuttimerTorrtraningUI() {
-    var wrap = document.getElementById("skjuttimer-torrtraning-wrap");
-    var hint = document.getElementById("skjuttimer-torrtraning-hint");
-    var btn = document.getElementById("btn-skjuttimer-create-series");
-    if (!wrap || !hint || !btn) return;
-
-    var station = getSelectedStation();
-    var repsInput = document.getElementById("skjuttimer-par-reps");
-    var reps = parseInt(repsInput && repsInput.value, 10) || 1;
-    var eligible = isTorrtraningStation(station) && skjuttimerMode === "par" && reps > 1;
-
-    wrap.style.display = eligible ? "block" : "none";
-    if (!eligible) return;
-
-    var recorded = skjuttimerShots.length;
-    if (!recorded) {
-      hint.textContent = "Kör passet färdigt - då kan " + reps + " serier med varsin uppmätt tid skapas automatiskt här.";
-      btn.disabled = true;
-    } else {
-      var willCreate = Math.min(recorded, reps);
-      hint.textContent = "Skapar " + willCreate + " serie(r) - varsin med den uppmätta tiden för just den upprepningen (" + recorded + " av " + reps + " upprepningar registrerade).";
-      btn.disabled = false;
-    }
-  }
-
-  // Sparar en enstaka torrträningsserie (utan poäng - bara tid) för en
-  // given station. Skriver inte över ett redan befintligt resultat.
-  function saveTorrtraningEntry(stationId, shooterName, timeSeconds, cb) {
-    var shooterKey = sanitizeKey(shooterName);
-    var entryRef = db.ref(dbPath("matches/match1/" + stationId + "/" + shooterKey));
-    entryRef.once("value").then(function (snap) {
-      if (snap.val() !== null) {
-        if (cb) cb(false);
-        return;
-      }
-      entryRef.set({
-        name: shooterName,
-        gross: 0,
-        penalty: 0,
-        bonus: 0,
-        net: 0,
-        time: parseFloat(timeSeconds.toFixed(2)),
-        hf: 0,
-        hitBreakdown: [],
-        useStationPoints: false,
-        distance: "",
-        weapon: "",
-        savedAt: Date.now()
-      }).then(function () {
-        db.ref(dbPath("shooters/" + shooterKey)).once("value").then(function (shooterSnap) {
-          var existing = shooterSnap.val();
-          var addedAt = getShooterAddedAt(existing) || Date.now();
-          db.ref(dbPath("shooters/" + shooterKey)).set({ name: shooterName, addedAt: addedAt });
-        });
-        if (cb) cb(true);
-      }).catch(function () { if (cb) cb(false); });
-    }).catch(function () { if (cb) cb(false); });
-  }
-
-  document.getElementById("btn-skjuttimer-create-series").addEventListener("click", function () {
-    if (!isPinUnlocked()) { alert("Ange rätt PIN-kod på Registrera-sidan för att kunna lägga till serier."); return; }
-    var station = getSelectedStation();
-    if (!isTorrtraningStation(station)) {
-      alert("Den valda stationen är inte en torrträningsövning (namnet måste innehålla \"torrträning\").");
-      return;
-    }
-    if (!skjuttimerShots.length) {
-      alert("Inga registrerade upprepningar än - kör passet färdigt först.");
-      return;
-    }
-    var shooterName = document.getElementById("shooter_name").value.trim();
-    if (!shooterName) {
-      alert("Fyll i skyttens namn innan du skapar serier.");
-      return;
-    }
-
-    var repsInput = document.getElementById("skjuttimer-par-reps");
-    var reps = parseInt(repsInput && repsInput.value, 10) || 1;
-    var repCount = Math.min(reps, skjuttimerShots.length);
-
-    // Splittiden för varje upprepning = tiden sedan föregående upprepnings
-    // klick (eller sedan start för den allra första).
-    var splits = [];
-    for (var i = 0; i < repCount; i++) {
-      var prev = i > 0 ? skjuttimerShots[i - 1] : 0;
-      splits.push((skjuttimerShots[i] - prev) / 1000);
-    }
-
-    if (repCount <= 1) {
-      // Bara en upprepning registrerad - ingen extra serie behövs, sparar
-      // bara tiden direkt på den redan valda stationen.
-      saveTorrtraningEntry(station.id, shooterName, splits[0], function (saved) {
-        setStatus(saved ? ("Tid sparad för " + shooterName + " ✔") : "Fanns redan ett resultat - inget sparat.", saved ? "status-ok" : "status-bad");
-      });
-      return;
-    }
-
-    var baseName = station.name.replace(/ - Serie \d+$/, "");
-
-    db.ref(dbPath("settings/stations")).transaction(function (currentRaw) {
-      var list = normalizeStationsArray(currentRaw);
-      for (var r = 1; r < repCount; r++) {
-        var newData = {};
-        for (var k in station) { if (station.hasOwnProperty(k)) newData[k] = station[k]; }
-        newData.name = baseName + " - Serie " + nextSerieNumber(list, baseName);
-        newData.id = "s_" + Date.now().toString(36) + Math.floor(Math.random() * 1000) + "_" + r;
-        var insertAt = findGroupInsertIndex(list, baseName);
-        if (insertAt === -1) list.push(newData);
-        else list.splice(insertAt + 1, 0, newData);
-      }
-      return list;
-    }, function (error, committed, snapshotAfterCallback) {
-      if (error) {
-        alert("Kunde inte skapa serier: " + error.message);
-        return;
-      }
-      if (!committed) return;
-
-      var committedList = normalizeStationsArray(snapshotAfterCallback ? snapshotAfterCallback.val() : null);
-      // Hittar de nyss skapade serierna genom att matcha på de id:n vi vet
-      // att vi bad om att skapa (namnen är deterministiska men id:na är unika).
-      var baseNamePattern = new RegExp("^" + baseName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + " - Serie \\d+$");
-      var candidateNewStations = committedList.filter(function (s) {
-        return baseNamePattern.test(s.name);
-      });
-      // Tar de sista (repCount - 1) matchande - de senast tillagda serierna.
-      var newStations = candidateNewStations.slice(-(repCount - 1));
-
-      var allStations = [station].concat(newStations);
-      var savedCount = 0, skippedCount = 0, doneCount = 0;
-      allStations.forEach(function (st, idx) {
-        saveTorrtraningEntry(st.id, shooterName, splits[idx], function (saved) {
-          if (saved) savedCount++; else skippedCount++;
-          doneCount++;
-          if (doneCount === allStations.length) {
-            setStatus(
-              savedCount + " serie(r) sparade för " + shooterName +
-              (skippedCount ? (", " + skippedCount + " hoppades över (fanns redan resultat)") : "") + ".",
-              "status-ok"
-            );
-            skjuttimerModalBackdrop.classList.remove("open");
-          }
-        });
-      });
-    });
-  });
-
   document.getElementById("btn-open-skjuttimer").addEventListener("click", function () {
     skjuttimerModalBackdrop.classList.add("open");
     updateSkjuttimerSensitivityLabel();
-    if (typeof refreshSkjuttimerTorrtraningUI === "function") refreshSkjuttimerTorrtraningUI();
   });
 
   // ---------------------------------------------------------------
@@ -5067,16 +4848,8 @@
       skjuttimerParTimeGroup.style.display = skjuttimerMode === "par" ? "block" : "none";
       skjuttimerDelayGroup.style.display = skjuttimerMode === "normal" ? "block" : "none";
       skjuttimerModeHintEl.textContent = SKJUTTIMER_MODE_HINTS[skjuttimerMode];
-      if (typeof refreshSkjuttimerTorrtraningUI === "function") refreshSkjuttimerTorrtraningUI();
     });
   });
-
-  var skjuttimerParRepsInput = document.getElementById("skjuttimer-par-reps");
-  if (skjuttimerParRepsInput) {
-    skjuttimerParRepsInput.addEventListener("input", function () {
-      if (typeof refreshSkjuttimerTorrtraningUI === "function") refreshSkjuttimerTorrtraningUI();
-    });
-  }
 
   // ---------------------------------------------------------------
   // Fördröjning innan pip (bara i Normal-läge): Slumpad (standard) /
@@ -5112,28 +4885,26 @@
   });
 
   // ---------------------------------------------------------------
-  // Vänner: helt oberoende av matchkod - identifieras med samma namn som
-  // i Skytt-fältet (samma modell som personalLogs). Man kan chatta med en
-  // vän eller skicka en av sina egna stationsmallar till dem (som de sedan
-  // kan förhandsgranska och välja att lägga till eller neka).
+  // Vänner: helt oberoende av matchkod, och knutet till det PERMANENTA
+  // ID:t (myUserId) - inte till namnet. Byter man namn (t.ex. råkar
+  // klicka fel) följer vänner/chatt/förslag ändå med automatiskt, precis
+  // som loggboken. Namn används bara för att HITTA en person första
+  // gången (via userDirectory), och för visning.
   // ---------------------------------------------------------------
   function myFriendsRef() {
-    var name = myShooterNameInput.value.trim();
-    if (!name || !db) return null;
-    return db.ref("friends/" + sanitizeKey(name) + "/list");
+    if (!db) return null;
+    return db.ref("friends/" + myUserId + "/list");
   }
 
-  function globalDmKey(otherName) {
-    var mine = sanitizeKey(myShooterNameInput.value.trim() || "okänd");
-    var other = sanitizeKey(otherName);
-    var pair = [mine, other].sort();
+  function globalDmKey(otherId) {
+    var pair = [myUserId, otherId].sort();
     return pair[0] + "_" + pair[1];
   }
 
-  var unreadFriends = {}; // { friendName: true } - vilka vänner har olästa meddelanden just nu
+  var unreadFriends = {}; // { friendId: true } - vilka vänner har olästa meddelanden just nu
   var pendingOfferCount = 0;
   var pendingRequestCount = 0;
-  var friendUnreadListeners = {}; // { friendName: firebaseRef } - för att kunna städa bort vid ombyggnad av listan
+  var friendUnreadListeners = {}; // { friendId: firebaseRef } - för att kunna städa bort vid ombyggnad av listan
 
   function friendChatLastReadKey(pairKey) {
     return "poangrakning_chat_lastread_" + pairKey;
@@ -5169,7 +4940,9 @@
 
   // Skickar en vänförfrågan (kräver godkännande innan man faktiskt blir
   // vänner) - kan anropas från Vänner-sektionen, "Hantera skyttar" och
-  // Topplistan.
+  // Topplistan. Slår upp namnet i userDirectory för att hitta personens
+  // permanenta ID - personen måste ha öppnat appen minst en gång med det
+  // namnet för att gå att hitta.
   function sendFriendRequest(name) {
     name = (name || "").trim();
     if (!name) return;
@@ -5178,49 +4951,56 @@
     if (sanitizeKey(name) === sanitizeKey(myName)) { alert("Du kan inte lägga till dig själv som vän."); return; }
     if (!db) return;
 
-    var myFriendsRefCheck = myFriendsRef();
-    myFriendsRefCheck.once("value").then(function (snap) {
-      var list = snap.val() || [];
-      if (list.some(function (n) { return sanitizeKey(n) === sanitizeKey(name); })) {
-        alert(name + " är redan din vän.");
+    db.ref("userDirectory/" + sanitizeKey(name)).once("value").then(function (dirSnap) {
+      var targetId = dirSnap.val();
+      if (!targetId) {
+        alert("Kunde inte hitta någon som heter \"" + name + "\" - personen behöver ha öppnat appen minst en gång med det namnet i Skytt-fältet.");
         return;
       }
-      var targetKey = sanitizeKey(name);
-      var requestsRef = db.ref("friendRequests/" + targetKey);
-      requestsRef.once("value").then(function (reqSnap) {
-        var existing = reqSnap.val() || {};
-        var alreadySent = Object.keys(existing).some(function (k) {
-          return sanitizeKey(existing[k].from || "") === sanitizeKey(myName);
-        });
-        if (alreadySent) {
-          alert("Du har redan skickat en förfrågan till " + name + ".");
+      if (targetId === myUserId) { alert("Du kan inte lägga till dig själv som vän."); return; }
+
+      var myFriendsRefCheck = myFriendsRef();
+      myFriendsRefCheck.once("value").then(function (snap) {
+        var list = snap.val() || [];
+        if (list.some(function (f) { return f.id === targetId; })) {
+          alert(name + " är redan din vän.");
           return;
         }
-        requestsRef.push({ from: myName, sentAt: Date.now() }).then(function () {
-          alert("Vänförfrågan skickad till " + name + "!");
+        var requestsRef = db.ref("friendRequests/" + targetId);
+        requestsRef.once("value").then(function (reqSnap) {
+          var existing = reqSnap.val() || {};
+          var alreadySent = Object.keys(existing).some(function (k) {
+            return existing[k].fromId === myUserId;
+          });
+          if (alreadySent) {
+            alert("Du har redan skickat en förfrågan till " + name + ".");
+            return;
+          }
+          requestsRef.push({ fromId: myUserId, fromName: myName, sentAt: Date.now() }).then(function () {
+            alert("Vänförfrågan skickad till " + name + "!");
+          });
         });
       });
     });
   }
 
-  function watchFriendForUnread(name) {
+  function watchFriendForUnread(friend) {
     if (!db) return;
-    var pairKey = globalDmKey(name);
+    var pairKey = globalDmKey(friend.id);
     var ref = db.ref("directMessages/" + pairKey + "/messages").limitToLast(1);
-    friendUnreadListeners[name] = ref;
+    friendUnreadListeners[friend.id] = ref;
     ref.on("value", function (snap) {
       var val = snap.val();
-      var hadUnread = !!unreadFriends[name];
-      delete unreadFriends[name];
+      var hadUnread = !!unreadFriends[friend.id];
+      delete unreadFriends[friend.id];
       if (val) {
         var lastMsg = null;
         Object.keys(val).forEach(function (k) { lastMsg = val[k]; });
-        var mineKey = sanitizeKey(myShooterNameInput.value.trim());
-        if (lastMsg && sanitizeKey(lastMsg.from || "") !== mineKey && lastMsg.ts > getLastRead(pairKey)) {
-          unreadFriends[name] = true;
+        if (lastMsg && lastMsg.fromId !== myUserId && lastMsg.ts > getLastRead(pairKey)) {
+          unreadFriends[friend.id] = true;
         }
       }
-      if (hadUnread !== !!unreadFriends[name]) {
+      if (hadUnread !== !!unreadFriends[friend.id]) {
         renderFriendsList(loadedFriendsListCache);
       }
       updateNotificationBadges();
@@ -5237,7 +5017,7 @@
       container.innerHTML = "<p class='meta-text'>Inga vänner tillagda än.</p>";
       return;
     }
-    list.forEach(function (name) {
+    list.forEach(function (friend) {
       var row = document.createElement("div");
       row.className = "settings-row";
 
@@ -5247,47 +5027,46 @@
       span.style.overflow = "hidden";
       span.style.textOverflow = "ellipsis";
       span.style.whiteSpace = "nowrap";
-      span.textContent = name;
+      span.textContent = friend.name;
 
       var chatBtn = document.createElement("button");
       chatBtn.type = "button";
       chatBtn.className = "small-btn";
       chatBtn.style.cssText = "margin:0 0 0 6px;flex:0 0 auto;position:relative;";
       chatBtn.textContent = "💬";
-      chatBtn.title = "Chatta med " + name;
-      if (unreadFriends[name]) {
+      chatBtn.title = "Chatta med " + friend.name;
+      if (unreadFriends[friend.id]) {
         var dot = document.createElement("span");
         dot.style.cssText = "position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--danger);border:1px solid #fff;";
         chatBtn.appendChild(dot);
       }
-      chatBtn.addEventListener("click", function () { openFriendChat(name); });
+      chatBtn.addEventListener("click", function () { openFriendChat(friend); });
 
       var sendBtn = document.createElement("button");
       sendBtn.type = "button";
       sendBtn.className = "small-btn";
       sendBtn.style.cssText = "margin:0 0 0 6px;flex:0 0 auto;";
       sendBtn.textContent = "📑";
-      sendBtn.title = "Skicka en station till " + name;
-      sendBtn.addEventListener("click", function () { openSendStation(name); });
+      sendBtn.title = "Skicka en station till " + friend.name;
+      sendBtn.addEventListener("click", function () { openSendStation(friend); });
 
       var delBtn = document.createElement("button");
       delBtn.type = "button";
       delBtn.className = "small-btn";
       delBtn.style.cssText = "margin:0 0 0 6px;flex:0 0 auto;background:var(--danger);";
       delBtn.textContent = "✕";
-      delBtn.title = "Ta bort " + name + " som vän";
+      delBtn.title = "Ta bort " + friend.name + " som vän";
       delBtn.addEventListener("click", function () {
-        if (!confirm("Ta bort \"" + name + "\" som vän?")) return;
+        if (!confirm("Ta bort \"" + friend.name + "\" som vän?")) return;
         var ref = myFriendsRef();
         if (!ref) return;
-        var newList = list.filter(function (n) { return n !== name; });
+        var newList = list.filter(function (f) { return f.id !== friend.id; });
         ref.set(newList);
-        var myName = myShooterNameInput.value.trim();
         // Tar bort mig från den andras lista också, så vänskapen upphör
         // ömsesidigt istället för att bara försvinna på ena hållet.
-        var theirRef = db.ref("friends/" + sanitizeKey(name) + "/list");
+        var theirRef = db.ref("friends/" + friend.id + "/list");
         theirRef.once("value").then(function (snap) {
-          var theirList = (snap.val() || []).filter(function (n) { return sanitizeKey(n) !== sanitizeKey(myName); });
+          var theirList = (snap.val() || []).filter(function (f) { return f.id !== myUserId; });
           theirRef.set(theirList);
         });
       });
@@ -5301,7 +5080,11 @@
   }
 
   if (db) {
-    myShooterNameInput.addEventListener("change", refreshFriendsAndOffers);
+    myShooterNameInput.addEventListener("change", function () {
+      // Uppdaterar bara visningsnamnet i listan - vänskapen (kopplad till
+      // ID:t) påverkas inte alls av namnbytet.
+      refreshFriendsAndOffers();
+    });
     refreshFriendsAndOffers();
   }
   var friendsListenerRef = null;
@@ -5311,8 +5094,8 @@
     if (friendsListenerRef) friendsListenerRef.off("value");
     if (offersListenerRef) offersListenerRef.off("value");
     if (requestsListenerRef) requestsListenerRef.off("value");
-    Object.keys(friendUnreadListeners).forEach(function (name) {
-      friendUnreadListeners[name].off("value");
+    Object.keys(friendUnreadListeners).forEach(function (id) {
+      friendUnreadListeners[id].off("value");
     });
     friendUnreadListeners = {};
     unreadFriends = {};
@@ -5329,16 +5112,15 @@
     } else {
       renderFriendsList([]);
     }
-    var name = myShooterNameInput.value.trim();
-    if (name && db) {
-      offersListenerRef = db.ref("stationOffers/" + sanitizeKey(name));
+    if (db) {
+      offersListenerRef = db.ref("stationOffers/" + myUserId);
       offersListenerRef.on("value", function (snap) {
         var offers = snap.val() || {};
         pendingOfferCount = Object.keys(offers).length;
         renderStationOffers(offers);
         updateNotificationBadges();
       });
-      requestsListenerRef = db.ref("friendRequests/" + sanitizeKey(name));
+      requestsListenerRef = db.ref("friendRequests/" + myUserId);
       requestsListenerRef.on("value", function (snap) {
         var requests = snap.val() || {};
         pendingRequestCount = Object.keys(requests).length;
@@ -5370,7 +5152,7 @@
       var span = document.createElement("span");
       span.style.width = "auto";
       span.style.flex = "1";
-      span.textContent = req.from + " vill bli vän";
+      span.textContent = req.fromName + " vill bli vän";
 
       var approveBtn = document.createElement("button");
       approveBtn.type = "button";
@@ -5379,21 +5161,23 @@
       approveBtn.textContent = "✅ Godkänn";
       approveBtn.addEventListener("click", function () {
         var myName = myShooterNameInput.value.trim();
-        var myKey = sanitizeKey(myName);
-        var otherKey = sanitizeKey(req.from);
-        // Lägger till varandra ömsesidigt i respektives vänlistor.
-        db.ref("friends/" + myKey + "/list").once("value").then(function (snap) {
+        // Lägger till varandra ömsesidigt i respektives vänlistor, via ID.
+        db.ref("friends/" + myUserId + "/list").once("value").then(function (snap) {
           var myList = snap.val() || [];
-          if (!myList.some(function (n) { return sanitizeKey(n) === otherKey; })) myList.push(req.from);
-          return db.ref("friends/" + myKey + "/list").set(myList);
+          if (!myList.some(function (f) { return f.id === req.fromId; })) {
+            myList.push({ id: req.fromId, name: req.fromName });
+          }
+          return db.ref("friends/" + myUserId + "/list").set(myList);
         }).then(function () {
-          return db.ref("friends/" + otherKey + "/list").once("value");
+          return db.ref("friends/" + req.fromId + "/list").once("value");
         }).then(function (snap) {
           var theirList = snap.val() || [];
-          if (!theirList.some(function (n) { return sanitizeKey(n) === myKey; })) theirList.push(myName);
-          return db.ref("friends/" + otherKey + "/list").set(theirList);
+          if (!theirList.some(function (f) { return f.id === myUserId; })) {
+            theirList.push({ id: myUserId, name: myName });
+          }
+          return db.ref("friends/" + req.fromId + "/list").set(theirList);
         }).then(function () {
-          return db.ref("friendRequests/" + myKey + "/" + key).remove();
+          return db.ref("friendRequests/" + myUserId + "/" + key).remove();
         });
       });
 
@@ -5403,7 +5187,7 @@
       declineBtn.style.cssText = "margin:0 0 0 6px;background:var(--danger);";
       declineBtn.textContent = "❌ Neka";
       declineBtn.addEventListener("click", function () {
-        db.ref("friendRequests/" + sanitizeKey(myShooterNameInput.value.trim()) + "/" + key).remove();
+        db.ref("friendRequests/" + myUserId + "/" + key).remove();
       });
 
       row.appendChild(span);
@@ -5420,31 +5204,31 @@
   });
 
   // ---------------------------------------------------------------
-  // Vän-chatt: helt globalt, oberoende av matchkod.
+  // Vän-chatt: helt globalt, oberoende av matchkod och namn - knutet till
+  // permanenta ID:n.
   // ---------------------------------------------------------------
   var friendChatModalBackdrop = document.getElementById("friendChatModalBackdrop");
   var friendChatMessagesEl = document.getElementById("friend-chat-messages");
   var friendChatListenerRef = null;
-  var currentFriendChatName = "";
+  var currentFriendChat = null; // { id, name }
 
   function renderFriendChatMessage(msg) {
-    var mineKey = sanitizeKey(myShooterNameInput.value.trim());
-    var isMine = sanitizeKey(msg.from || "") === mineKey;
+    var isMine = msg.fromId === myUserId;
     var div = document.createElement("div");
     div.style.cssText = "margin-bottom:8px;text-align:" + (isMine ? "right" : "left") + ";";
     var time = msg.ts ? new Date(msg.ts).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }) : "";
-    div.innerHTML = "<span style='display:block;font-size:11px;color:#64748B;'>" + escapeHtml(msg.from || "?") + " · " + time + "</span>" + escapeHtml(msg.text || "");
+    div.innerHTML = "<span style='display:block;font-size:11px;color:#64748B;'>" + escapeHtml(msg.fromName || "?") + " · " + time + "</span>" + escapeHtml(msg.text || "");
     friendChatMessagesEl.appendChild(div);
     friendChatMessagesEl.scrollTop = friendChatMessagesEl.scrollHeight;
   }
 
-  function openFriendChat(name) {
+  function openFriendChat(friend) {
     if (!db) return;
-    currentFriendChatName = name;
-    document.getElementById("friend-chat-title").textContent = "Chatt med " + name;
+    currentFriendChat = friend;
+    document.getElementById("friend-chat-title").textContent = "Chatt med " + friend.name;
     friendChatMessagesEl.innerHTML = "";
     if (friendChatListenerRef) friendChatListenerRef.off("child_added");
-    var pairKey = globalDmKey(name);
+    var pairKey = globalDmKey(friend.id);
     friendChatListenerRef = db.ref("directMessages/" + pairKey + "/messages");
     var gotAny = false;
     friendChatListenerRef.limitToLast(100).on("child_added", function (snap) {
@@ -5458,8 +5242,8 @@
 
     // Markerar konversationen som läst - tar bort den olästa-markeringen.
     setLastRead(pairKey, Date.now());
-    if (unreadFriends[name]) {
-      delete unreadFriends[name];
+    if (unreadFriends[friend.id]) {
+      delete unreadFriends[friend.id];
       renderFriendsList(loadedFriendsListCache);
       updateNotificationBadges();
     }
@@ -5468,10 +5252,11 @@
   function sendFriendChatMessage() {
     var input = document.getElementById("friend-chat-input");
     var text = input.value.trim();
-    if (!text || !db || !currentFriendChatName) return;
+    if (!text || !db || !currentFriendChat) return;
     var name = myShooterNameInput.value.trim() || "Okänd";
-    db.ref("directMessages/" + globalDmKey(currentFriendChatName) + "/messages").push({
-      from: name,
+    db.ref("directMessages/" + globalDmKey(currentFriendChat.id) + "/messages").push({
+      fromId: myUserId,
+      fromName: name,
       text: text,
       ts: Date.now()
     });
@@ -5483,7 +5268,7 @@
   });
   document.getElementById("btn-friend-chat-close").addEventListener("click", function () {
     if (friendChatListenerRef) friendChatListenerRef.off("child_added");
-    if (currentFriendChatName) setLastRead(globalDmKey(currentFriendChatName), Date.now());
+    if (currentFriendChat) setLastRead(globalDmKey(currentFriendChat.id), Date.now());
     friendChatModalBackdrop.classList.remove("open");
   });
 
@@ -5493,11 +5278,11 @@
   // neka, den läggs INTE till direkt hos dem.
   // ---------------------------------------------------------------
   var sendStationModalBackdrop = document.getElementById("sendStationModalBackdrop");
-  var currentSendStationFriend = "";
+  var currentSendStationFriend = null; // { id, name }
 
-  function openSendStation(name) {
-    currentSendStationFriend = name;
-    document.getElementById("send-station-title").textContent = "Skicka station till " + name;
+  function openSendStation(friend) {
+    currentSendStationFriend = friend;
+    document.getElementById("send-station-title").textContent = "Skicka station till " + friend.name;
     var container = document.getElementById("send-station-list");
     container.innerHTML = "";
     var myTemplates = loadStationTemplatesLocal();
@@ -5518,12 +5303,13 @@
         sendBtn.textContent = "Skicka";
         sendBtn.addEventListener("click", function () {
           if (!db) return;
-          db.ref("stationOffers/" + sanitizeKey(currentSendStationFriend)).push({
+          db.ref("stationOffers/" + currentSendStationFriend.id).push({
             from: myShooterNameInput.value.trim() || "Okänd",
+            fromId: myUserId,
             template: tmpl,
             sentAt: Date.now()
           }).then(function () {
-            alert("Station skickad till " + currentSendStationFriend + "!");
+            alert("Station skickad till " + currentSendStationFriend.name + "!");
             sendStationModalBackdrop.classList.remove("open");
           });
         });
@@ -5583,17 +5369,18 @@
     list.push(currentStationOffer.offer.template);
     saveStationTemplatesLocal(list);
     renderTemplates(list);
-    db.ref("stationOffers/" + sanitizeKey(myShooterNameInput.value.trim()) + "/" + currentStationOffer.key).remove();
+    db.ref("stationOffers/" + myUserId + "/" + currentStationOffer.key).remove();
     stationOfferPreviewBackdrop.classList.remove("open");
     alert("Tillagd i dina mallar!");
     currentStationOffer = null;
   });
   document.getElementById("btn-station-offer-decline").addEventListener("click", function () {
     if (!currentStationOffer) return;
-    db.ref("stationOffers/" + sanitizeKey(myShooterNameInput.value.trim()) + "/" + currentStationOffer.key).remove();
+    db.ref("stationOffers/" + myUserId + "/" + currentStationOffer.key).remove();
     stationOfferPreviewBackdrop.classList.remove("open");
     currentStationOffer = null;
   });
+
 
   // ---------------------------------------------------------------
   // Personlig loggbok: hör till SKYTTEN (namnet), inte till enheten
@@ -5603,15 +5390,13 @@
   // i Skytt-fältet, oavsett vilken tävling/träning man är med i.
   // ---------------------------------------------------------------
   function personalLogRef() {
-    var name = myShooterNameInput.value.trim();
-    if (!name || !db) return null;
-    return db.ref("personalLogs/" + sanitizeKey(name) + "/entries");
+    if (!db) return null;
+    return db.ref("personalLogs/" + myUserId + "/entries");
   }
 
   function personalLogBackupRef() {
-    var name = myShooterNameInput.value.trim();
-    if (!name || !db) return null;
-    return db.ref("personalLogs/" + sanitizeKey(name) + "/backup");
+    if (!db) return null;
+    return db.ref("personalLogs/" + myUserId + "/backup");
   }
 
   function loadPersonalLogAsync() {
@@ -5676,12 +5461,53 @@
   migratePersonalLogIfNeeded();
   myShooterNameInput.addEventListener("change", migratePersonalLogIfNeeded);
 
+  // Engångsmigrering: flyttar upp ev. befintlig loggbok som låg under det
+  // GAMLA namnbaserade nyckelsystemet (innan det permanenta ID:t fanns) till
+  // den nya, namnobundna platsen - så ingen tidigare historik försvinner.
+  function migratePersonalLogToUserIdIfNeeded() {
+    var name = myShooterNameInput.value.trim();
+    if (!name || !db) return;
+    var migKey = "poangrakning_personal_log_id_migrated_" + sanitizeKey(name);
+    var already = false;
+    try { already = window.localStorage.getItem(migKey) === "1"; } catch (e) { /* ignore */ }
+    if (already) return;
+    var oldRef = db.ref("personalLogs/" + sanitizeKey(name) + "/entries");
+    var newRef = db.ref("personalLogs/" + myUserId + "/entries");
+    oldRef.once("value").then(function (oldSnap) {
+      var oldEntries = oldSnap.val() || [];
+      try { window.localStorage.setItem(migKey, "1"); } catch (e) { /* ignore */ }
+      if (!oldEntries.length) return;
+      return newRef.once("value").then(function (newSnap) {
+        var newEntries = newSnap.val() || [];
+        if (newEntries.length) return; // redan data på nya platsen - rör inte
+        return newRef.set(oldEntries);
+      });
+    });
+  }
+  migratePersonalLogToUserIdIfNeeded();
+  myShooterNameInput.addEventListener("change", migratePersonalLogToUserIdIfNeeded);
+
+  // Kopplar mitt permanenta ID till namnet jag råkar visa just nu, så att
+  // vänner kan hitta mig genom att skriva in mitt namn (senaste namnet
+  // "vinner" - motsvarande hur namn redan fungerar överallt annars i appen).
+  function claimNameForUserId() {
+    var name = myShooterNameInput.value.trim();
+    if (!name || !db) return;
+    db.ref("users/" + myUserId + "/displayName").set(name);
+    db.ref("userDirectory/" + sanitizeKey(name)).set(myUserId);
+  }
+  claimNameForUserId();
+  myShooterNameInput.addEventListener("change", claimNameForUserId);
+
   function updateFinishButtonsVisibility() {
     var finishSessionBtn = document.getElementById("btn-finish-session");
     var finishMyBtn = document.getElementById("btn-finish-my-participation");
     if (!finishSessionBtn || !finishMyBtn) return;
-    finishSessionBtn.style.display = iAmCreator ? "" : "none";
-    finishMyBtn.style.display = iAmCreator ? "none" : "";
+    // "Avsluta passet" är en priviligierad åtgärd (avslutar HELA matchen) -
+    // bara skjutledare/biträde. "Logga detta pass" är bara en personlig
+    // loggboksanteckning och är öppen för alla, oavsett PIN-status.
+    finishSessionBtn.style.display = isPinUnlocked() ? "" : "none";
+    finishMyBtn.style.display = "";
   }
   updateFinishButtonsVisibility();
 
@@ -5821,16 +5647,13 @@
   });
 
   // ---------------------------------------------------------------
-  // Avsluta mitt deltagande: för en skytt som ANSLUTIT (inte skjutledare).
-  // Avslutar bara sin EGEN medverkan - tar bort det egna namnet från
-  // skyttlistan (så inga fler resultat kan registreras på en), loggar
-  // ett personligt loggboksinlägg, men rör varken tidigare sparade
-  // resultat, stationer eller matchkoden. Aktiviteten fortsätter som
-  // vanligt för alla andra - avslutas helt först när skjutledaren
-  // trycker "Avsluta passet".
+  // Logga detta pass: en ren personlig loggboksanteckning, öppen för alla
+  // oavsett PIN-status. Rör varken skyttlistan, resultat eller matchkoden -
+  // det är helt separat från "Avsluta passet" (som bara skjutledare/
+  // biträde kan göra, och som avslutar HELA matchen för alla).
   // ---------------------------------------------------------------
   document.getElementById("btn-finish-my-participation").addEventListener("click", function () {
-    if (!confirm("Avsluta ditt eget deltagande?\n\nDitt namn tas bort från skyttlistan så inga fler resultat kan registreras på dig. Redan sparade resultat på dig påverkas INTE. Ett inlägg sparas i din personliga loggbok (i molnet). Aktiviteten fortsätter som vanligt för övriga skyttar.")) return;
+    if (!confirm("Logga detta pass i din personliga loggbok?\n\nDetta påverkar inte matchen, resultat eller andra skyttar - bara din egen loggbok.")) return;
 
     var entry = buildLogEntryFromCurrentInfo();
     loadPersonalLogAsync().then(function (before) {
@@ -5840,18 +5663,9 @@
         return savePersonalLogAsync(after);
       });
     }).then(function () {
-      var val = myShooterNameInput.value.trim();
-      if (val && db) {
-        var key = sanitizeKey(val);
-        db.ref(dbPath("shooters/" + key)).remove();
-      }
-      jagSkaSkjuta = false;
-      try { window.localStorage.setItem("poangrakning_jag_ska_skjuta", "0"); } catch (e) { /* ignore */ }
-      jagSkaSkjutaCheckbox.checked = false;
-
       document.getElementById("log_comment").value = "";
       logCommentImages = [];
-      showConfirm("Ditt deltagande är avslutat och sparat i din loggbok (molnet, med säkerhetskopia). Aktiviteten fortsätter för övriga.");
+      showConfirm("Passet är loggat i din personliga loggbok (molnet, med säkerhetskopia).");
     }).catch(function (err) {
       alert("Något gick fel: " + err.message);
     });
@@ -6075,17 +5889,6 @@
     var day = String(d.getDate()).padStart(2, "0");
     return d.getFullYear() + "-" + m + "-" + day;
   }
-
-  // Återställer senaste flik + scrollposition när appen laddas/startas om.
-  // Liten fördröjning så att roll/behörighet (skjutledare/biträde/skytt)
-  // hunnit läsas in innan vi ev. byter flik, annars kan viewer-spärren i
-  // switchTab() slå till felaktigt på en flik som faktiskt är tillåten.
-  setTimeout(function () {
-    var savedTab = "start";
-    try { savedTab = window.localStorage.getItem(LAST_TAB_STORAGE_KEY) || "start"; } catch (e) { /* ignore */ }
-    if (savedTab === "settings") savedTab = "start"; // extra säkerhetsnät
-    switchTab(savedTab);
-  }, 400);
 
 })();
 
