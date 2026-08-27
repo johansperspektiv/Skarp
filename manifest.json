@@ -1,6 +1,6 @@
 {
-  "name": "Skytte",
-  "short_name": "Skytte",
+  "name": "Skarp",
+  "short_name": "Skarp",
   "description": "Poängräkning, topplista, samband och skjuttimer för skyttesport",
   "start_url": "./index.html",
   "scope": "./",

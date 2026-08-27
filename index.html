@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Skytte</title>
+<title>Skarp</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1E3D59">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Skytte">
+<meta name="apple-mobile-web-app-title" content="Skarp">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="icon" href="icon-192.png">
 <style>
@@ -18,7 +18,18 @@
   h1,h2 { text-align:center; color:var(--primary); margin-top:0; }
   h4 { color:var(--primary); margin-bottom:6px; }
   .tab-buttons { display:flex; gap:8px; margin-bottom:20px; }
-  .tab-btn { flex:1; padding:12px 4px; border:none; background:#E4E7EB; font-weight:bold; border-radius:6px; cursor:pointer; font-size:13px; }
+  .tab-btn { flex:1; padding:12px 4px; border:none; background:#E4E7EB; font-weight:bold; border-radius:6px; cursor:pointer; font-size:13px; position:relative; }
+  .notif-badge {
+    position:absolute; top:-6px; right:-6px; background:var(--danger); color:#fff;
+    border-radius:50%; min-width:18px; height:18px; padding:0 4px; font-size:11px;
+    font-weight:bold; display:none; align-items:center; justify-content:center; line-height:1;
+  }
+  .notif-badge.show { display:inline-flex; }
+  .notif-badge-inline {
+    background:var(--danger); color:#fff; border-radius:10px; padding:1px 7px; font-size:11px;
+    font-weight:bold; margin-left:6px; display:none;
+  }
+  .notif-badge-inline.show { display:inline-block; }
   .tab-btn.active { background:var(--primary); color:#fff; }
   .form-group { margin-bottom:12px; }
   label { display:block; font-weight:bold; margin-bottom:4px; font-size:14px; }
@@ -226,7 +237,7 @@
 
 <div class="container">
   <div id="app-chrome">
-    <h1 id="app-title">Skytte</h1>
+    <h1 id="app-title">Skarp</h1>
 
     <div class="tab-buttons">
       <button id="btn-start" class="tab-btn active" type="button">Start</button>
@@ -235,7 +246,7 @@
     </div>
     <div class="tab-buttons" style="margin-top:8px;">
       <button id="btn-samband" class="tab-btn" type="button">Samband</button>
-      <button id="btn-settings" class="tab-btn" type="button">Inställningar</button>
+      <button id="btn-settings" class="tab-btn" type="button">Inställningar<span id="settings-notif-badge" class="notif-badge"></span></button>
     </div>
 
     <div class="modal-actions" style="margin-top:10px;">
@@ -552,6 +563,20 @@
     </div>
 
     <hr>
+    <h2 style="margin-top:0;">Vänner<span id="friends-notif-badge" class="notif-badge-inline"></span></h2>
+    <p class="meta-text" style="margin-top:0;">Lägg till vänner via namn (samma namn som de skriver i Skytt-fältet) för att chatta eller skicka stationsmallar till varandra - helt oberoende av matchkod/aktivitet.</p>
+    <div style="display:flex;gap:8px;">
+      <input type="text" id="friend_name_input" placeholder="Väns namn" style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;">
+      <button type="button" class="small-btn" id="btn-add-friend" style="margin:0;">➕ Lägg till</button>
+    </div>
+    <div id="friends-list" style="margin-top:10px;">Laddar…</div>
+
+    <div style="margin-top:16px;">
+      <p class="meta-text" style="margin-top:0;font-weight:bold;">📥 Inkommande stationer<span id="offers-notif-badge" class="notif-badge-inline"></span></p>
+      <div id="station-offers-list">Laddar…</div>
+    </div>
+
+    <hr>
     <h2 style="margin-top:0;">Loggbok</h2>
     <p class="meta-text" style="margin-top:0;">Om något gått fel med din personliga loggbok finns alltid en automatisk säkerhetskopia (från senast du avslutade ett pass) att hämta här - för namnet som just nu står i Skytt-fältet på Start-sidan.</p>
     <button type="button" class="small-btn" id="btn-restore-log" style="margin-left:0;">🔄 Återskapa loggbok</button>
@@ -686,6 +711,45 @@
     <div class="modal-actions">
       <button class="btn-confirm" id="btn-template-preview-add" type="button">➕ Lägg till som station</button>
       <button class="btn-cancel" id="btn-template-preview-close" type="button">Stäng</button>
+    </div>
+  </div>
+</div>
+
+<!-- FRIEND CHAT MODAL -->
+<div class="modal-backdrop" id="friendChatModalBackdrop">
+  <div class="modal-box" style="text-align:left;">
+    <h3 id="friend-chat-title">Chatt</h3>
+    <div id="friend-chat-messages" style="background:#F5F7FA;border-radius:8px;padding:10px;height:260px;overflow-y:auto;font-size:14px;"></div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <input type="text" id="friend-chat-input" placeholder="Skriv ett meddelande..." style="flex:1;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;">
+      <button type="button" class="small-btn" id="btn-friend-chat-send" style="margin:0;">Skicka</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-friend-chat-close" type="button">Stäng</button>
+    </div>
+  </div>
+</div>
+
+<!-- SEND STATION MODAL -->
+<div class="modal-backdrop" id="sendStationModalBackdrop">
+  <div class="modal-box" style="text-align:left;">
+    <h3 id="send-station-title">Skicka station</h3>
+    <p class="meta-text" style="margin-top:0;">Välj en av dina sparade mallar att skicka:</p>
+    <div id="send-station-list"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="btn-send-station-close" type="button">Avbryt</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATION OFFER PREVIEW MODAL -->
+<div class="modal-backdrop" id="stationOfferPreviewBackdrop">
+  <div class="modal-box" style="text-align:left;">
+    <h3 id="station-offer-preview-title">Föreslagen station</h3>
+    <div id="station-offer-preview-content"></div>
+    <div class="modal-actions">
+      <button class="btn-confirm" id="btn-station-offer-add" type="button">✅ Lägg till i mina mallar</button>
+      <button class="btn-cancel" id="btn-station-offer-decline" type="button">❌ Neka</button>
     </div>
   </div>
 </div>
@@ -1281,7 +1345,7 @@
     }
     if (typeof locationInput !== "undefined" && locationInput && locationInput.value.trim()) parts.push(locationInput.value.trim());
     if (typeof dateInput !== "undefined" && dateInput && dateInput.value.trim()) parts.push(dateInput.value.trim());
-    return parts.length ? parts.join(" – ") : "Skytte";
+    return parts.length ? parts.join(" – ") : "Skarp";
   }
 
   function maybeUpdateAutoTitle() {
@@ -1294,7 +1358,7 @@
       appTitleManual = snap.val() === true;
     });
     db.ref(dbPath("settings/appTitle")).on("value", function (snap) {
-      var title = snap.val() || "Skytte";
+      var title = snap.val() || "Skarp";
       appTitleEl.textContent = title;
       document.title = title;
       if (document.activeElement !== appTitleInput) appTitleInput.value = appTitleManual ? title : "";
@@ -4707,6 +4771,386 @@
     }
     skjuttimerAnalyser = null;
     skjuttimerModalBackdrop.classList.remove("open");
+  });
+
+  // ---------------------------------------------------------------
+  // Vänner: helt oberoende av matchkod - identifieras med samma namn som
+  // i Skytt-fältet (samma modell som personalLogs). Man kan chatta med en
+  // vän eller skicka en av sina egna stationsmallar till dem (som de sedan
+  // kan förhandsgranska och välja att lägga till eller neka).
+  // ---------------------------------------------------------------
+  function myFriendsRef() {
+    var name = myShooterNameInput.value.trim();
+    if (!name || !db) return null;
+    return db.ref("friends/" + sanitizeKey(name) + "/list");
+  }
+
+  function globalDmKey(otherName) {
+    var mine = sanitizeKey(myShooterNameInput.value.trim() || "okänd");
+    var other = sanitizeKey(otherName);
+    var pair = [mine, other].sort();
+    return pair[0] + "_" + pair[1];
+  }
+
+  var unreadFriends = {}; // { friendName: true } - vilka vänner har olästa meddelanden just nu
+  var pendingOfferCount = 0;
+  var friendUnreadListeners = {}; // { friendName: firebaseRef } - för att kunna städa bort vid ombyggnad av listan
+
+  function friendChatLastReadKey(pairKey) {
+    return "poangrakning_chat_lastread_" + pairKey;
+  }
+  function getLastRead(pairKey) {
+    try { return parseInt(window.localStorage.getItem(friendChatLastReadKey(pairKey)) || "0", 10); } catch (e) { return 0; }
+  }
+  function setLastRead(pairKey, ts) {
+    try { window.localStorage.setItem(friendChatLastReadKey(pairKey), String(ts)); } catch (e) { /* ignore */ }
+  }
+
+  function updateNotificationBadges() {
+    var unreadCount = Object.keys(unreadFriends).length;
+    var total = unreadCount + pendingOfferCount;
+
+    var settingsBadge = document.getElementById("settings-notif-badge");
+    settingsBadge.textContent = total > 9 ? "9+" : String(total);
+    settingsBadge.classList.toggle("show", total > 0);
+
+    var friendsBadge = document.getElementById("friends-notif-badge");
+    friendsBadge.textContent = unreadCount > 9 ? "9+" : String(unreadCount);
+    friendsBadge.classList.toggle("show", unreadCount > 0);
+
+    var offersBadge = document.getElementById("offers-notif-badge");
+    offersBadge.textContent = pendingOfferCount > 9 ? "9+" : String(pendingOfferCount);
+    offersBadge.classList.toggle("show", pendingOfferCount > 0);
+  }
+
+  function watchFriendForUnread(name) {
+    if (!db) return;
+    var pairKey = globalDmKey(name);
+    var ref = db.ref("directMessages/" + pairKey + "/messages").limitToLast(1);
+    friendUnreadListeners[name] = ref;
+    ref.on("value", function (snap) {
+      var val = snap.val();
+      var hadUnread = !!unreadFriends[name];
+      delete unreadFriends[name];
+      if (val) {
+        var lastMsg = null;
+        Object.keys(val).forEach(function (k) { lastMsg = val[k]; });
+        var mineKey = sanitizeKey(myShooterNameInput.value.trim());
+        if (lastMsg && sanitizeKey(lastMsg.from || "") !== mineKey && lastMsg.ts > getLastRead(pairKey)) {
+          unreadFriends[name] = true;
+        }
+      }
+      if (hadUnread !== !!unreadFriends[name]) {
+        renderFriendsList(loadedFriendsListCache);
+      }
+      updateNotificationBadges();
+    });
+  }
+
+  var loadedFriendsListCache = [];
+
+  function renderFriendsList(list) {
+    loadedFriendsListCache = list;
+    var container = document.getElementById("friends-list");
+    container.innerHTML = "";
+    if (!list.length) {
+      container.innerHTML = "<p class='meta-text'>Inga vänner tillagda än.</p>";
+      return;
+    }
+    list.forEach(function (name) {
+      var row = document.createElement("div");
+      row.className = "settings-row";
+
+      var span = document.createElement("span");
+      span.style.width = "auto";
+      span.style.flex = "1";
+      span.style.overflow = "hidden";
+      span.style.textOverflow = "ellipsis";
+      span.style.whiteSpace = "nowrap";
+      span.textContent = name;
+
+      var chatBtn = document.createElement("button");
+      chatBtn.type = "button";
+      chatBtn.className = "small-btn";
+      chatBtn.style.cssText = "margin:0 0 0 6px;flex:0 0 auto;position:relative;";
+      chatBtn.textContent = "💬";
+      chatBtn.title = "Chatta med " + name;
+      if (unreadFriends[name]) {
+        var dot = document.createElement("span");
+        dot.style.cssText = "position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--danger);border:1px solid #fff;";
+        chatBtn.appendChild(dot);
+      }
+      chatBtn.addEventListener("click", function () { openFriendChat(name); });
+
+      var sendBtn = document.createElement("button");
+      sendBtn.type = "button";
+      sendBtn.className = "small-btn";
+      sendBtn.style.cssText = "margin:0 0 0 6px;flex:0 0 auto;";
+      sendBtn.textContent = "📑";
+      sendBtn.title = "Skicka en station till " + name;
+      sendBtn.addEventListener("click", function () { openSendStation(name); });
+
+      var delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "small-btn";
+      delBtn.style.cssText = "margin:0 0 0 6px;flex:0 0 auto;background:var(--danger);";
+      delBtn.textContent = "✕";
+      delBtn.title = "Ta bort " + name + " som vän";
+      delBtn.addEventListener("click", function () {
+        if (!confirm("Ta bort \"" + name + "\" som vän?")) return;
+        var ref = myFriendsRef();
+        if (!ref) return;
+        var newList = list.filter(function (n) { return n !== name; });
+        ref.set(newList);
+      });
+
+      row.appendChild(span);
+      row.appendChild(chatBtn);
+      row.appendChild(sendBtn);
+      row.appendChild(delBtn);
+      container.appendChild(row);
+    });
+  }
+
+  if (db) {
+    myShooterNameInput.addEventListener("change", refreshFriendsAndOffers);
+    refreshFriendsAndOffers();
+  }
+  var friendsListenerRef = null;
+  var offersListenerRef = null;
+  function refreshFriendsAndOffers() {
+    if (friendsListenerRef) friendsListenerRef.off("value");
+    if (offersListenerRef) offersListenerRef.off("value");
+    Object.keys(friendUnreadListeners).forEach(function (name) {
+      friendUnreadListeners[name].off("value");
+    });
+    friendUnreadListeners = {};
+    unreadFriends = {};
+
+    var fRef = myFriendsRef();
+    if (fRef) {
+      friendsListenerRef = fRef;
+      fRef.on("value", function (snap) {
+        var list = snap.val() || [];
+        renderFriendsList(list);
+        list.forEach(watchFriendForUnread);
+        updateNotificationBadges();
+      });
+    } else {
+      renderFriendsList([]);
+    }
+    var name = myShooterNameInput.value.trim();
+    if (name && db) {
+      offersListenerRef = db.ref("stationOffers/" + sanitizeKey(name));
+      offersListenerRef.on("value", function (snap) {
+        var offers = snap.val() || {};
+        pendingOfferCount = Object.keys(offers).length;
+        renderStationOffers(offers);
+        updateNotificationBadges();
+      });
+    } else {
+      pendingOfferCount = 0;
+      renderStationOffers({});
+      updateNotificationBadges();
+    }
+  }
+
+  document.getElementById("btn-add-friend").addEventListener("click", function () {
+    var input = document.getElementById("friend_name_input");
+    var name = input.value.trim();
+    if (!name) return;
+    var myName = myShooterNameInput.value.trim();
+    if (!myName) { alert("Fyll först i ditt eget namn i Skytt-fältet på Start-sidan."); return; }
+    if (sanitizeKey(name) === sanitizeKey(myName)) { alert("Du kan inte lägga till dig själv som vän."); return; }
+    var ref = myFriendsRef();
+    if (!ref) return;
+    ref.once("value").then(function (snap) {
+      var list = snap.val() || [];
+      if (list.some(function (n) { return sanitizeKey(n) === sanitizeKey(name); })) {
+        alert(name + " är redan din vän.");
+        return;
+      }
+      list.push(name);
+      ref.set(list).then(function () {
+        input.value = "";
+      });
+    });
+  });
+
+  // ---------------------------------------------------------------
+  // Vän-chatt: helt globalt, oberoende av matchkod.
+  // ---------------------------------------------------------------
+  var friendChatModalBackdrop = document.getElementById("friendChatModalBackdrop");
+  var friendChatMessagesEl = document.getElementById("friend-chat-messages");
+  var friendChatListenerRef = null;
+  var currentFriendChatName = "";
+
+  function renderFriendChatMessage(msg) {
+    var mineKey = sanitizeKey(myShooterNameInput.value.trim());
+    var isMine = sanitizeKey(msg.from || "") === mineKey;
+    var div = document.createElement("div");
+    div.style.cssText = "margin-bottom:8px;text-align:" + (isMine ? "right" : "left") + ";";
+    var time = msg.ts ? new Date(msg.ts).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }) : "";
+    div.innerHTML = "<span style='display:block;font-size:11px;color:#64748B;'>" + escapeHtml(msg.from || "?") + " · " + time + "</span>" + escapeHtml(msg.text || "");
+    friendChatMessagesEl.appendChild(div);
+    friendChatMessagesEl.scrollTop = friendChatMessagesEl.scrollHeight;
+  }
+
+  function openFriendChat(name) {
+    if (!db) return;
+    currentFriendChatName = name;
+    document.getElementById("friend-chat-title").textContent = "Chatt med " + name;
+    friendChatMessagesEl.innerHTML = "";
+    if (friendChatListenerRef) friendChatListenerRef.off("child_added");
+    var pairKey = globalDmKey(name);
+    friendChatListenerRef = db.ref("directMessages/" + pairKey + "/messages");
+    var gotAny = false;
+    friendChatListenerRef.limitToLast(100).on("child_added", function (snap) {
+      gotAny = true;
+      renderFriendChatMessage(snap.val());
+    });
+    setTimeout(function () {
+      if (!gotAny) friendChatMessagesEl.innerHTML = "<p class='meta-text'>Inga meddelanden än.</p>";
+    }, 400);
+    friendChatModalBackdrop.classList.add("open");
+
+    // Markerar konversationen som läst - tar bort den olästa-markeringen.
+    setLastRead(pairKey, Date.now());
+    if (unreadFriends[name]) {
+      delete unreadFriends[name];
+      renderFriendsList(loadedFriendsListCache);
+      updateNotificationBadges();
+    }
+  }
+
+  function sendFriendChatMessage() {
+    var input = document.getElementById("friend-chat-input");
+    var text = input.value.trim();
+    if (!text || !db || !currentFriendChatName) return;
+    var name = myShooterNameInput.value.trim() || "Okänd";
+    db.ref("directMessages/" + globalDmKey(currentFriendChatName) + "/messages").push({
+      from: name,
+      text: text,
+      ts: Date.now()
+    });
+    input.value = "";
+  }
+  document.getElementById("btn-friend-chat-send").addEventListener("click", sendFriendChatMessage);
+  document.getElementById("friend-chat-input").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); sendFriendChatMessage(); }
+  });
+  document.getElementById("btn-friend-chat-close").addEventListener("click", function () {
+    if (friendChatListenerRef) friendChatListenerRef.off("child_added");
+    if (currentFriendChatName) setLastRead(globalDmKey(currentFriendChatName), Date.now());
+    friendChatModalBackdrop.classList.remove("open");
+  });
+
+  // ---------------------------------------------------------------
+  // Skicka station till vän: välj en av mina sparade mallar - vännen får
+  // den som ett förslag de kan förhandsgranska och sedan lägga till eller
+  // neka, den läggs INTE till direkt hos dem.
+  // ---------------------------------------------------------------
+  var sendStationModalBackdrop = document.getElementById("sendStationModalBackdrop");
+  var currentSendStationFriend = "";
+
+  function openSendStation(name) {
+    currentSendStationFriend = name;
+    document.getElementById("send-station-title").textContent = "Skicka station till " + name;
+    var container = document.getElementById("send-station-list");
+    container.innerHTML = "";
+    var myTemplates = loadStationTemplatesLocal();
+    if (!myTemplates.length) {
+      container.innerHTML = "<p class='meta-text'>Du har inga sparade mallar att skicka än.</p>";
+    } else {
+      myTemplates.forEach(function (tmpl) {
+        var row = document.createElement("div");
+        row.className = "settings-row";
+        var span = document.createElement("span");
+        span.style.width = "auto";
+        span.style.flex = "1";
+        span.textContent = tmpl.templateName + " (" + tmpl.distance + ")";
+        var sendBtn = document.createElement("button");
+        sendBtn.type = "button";
+        sendBtn.className = "small-btn";
+        sendBtn.style.margin = "0";
+        sendBtn.textContent = "Skicka";
+        sendBtn.addEventListener("click", function () {
+          if (!db) return;
+          db.ref("stationOffers/" + sanitizeKey(currentSendStationFriend)).push({
+            from: myShooterNameInput.value.trim() || "Okänd",
+            template: tmpl,
+            sentAt: Date.now()
+          }).then(function () {
+            alert("Station skickad till " + currentSendStationFriend + "!");
+            sendStationModalBackdrop.classList.remove("open");
+          });
+        });
+        row.appendChild(span);
+        row.appendChild(sendBtn);
+        container.appendChild(row);
+      });
+    }
+    sendStationModalBackdrop.classList.add("open");
+  }
+  document.getElementById("btn-send-station-close").addEventListener("click", function () {
+    sendStationModalBackdrop.classList.remove("open");
+  });
+
+  // ---------------------------------------------------------------
+  // Inkommande stationsförslag
+  // ---------------------------------------------------------------
+  var stationOfferPreviewBackdrop = document.getElementById("stationOfferPreviewBackdrop");
+  var currentStationOffer = null;
+
+  function renderStationOffers(offers) {
+    var container = document.getElementById("station-offers-list");
+    container.innerHTML = "";
+    var keys = Object.keys(offers);
+    if (!keys.length) {
+      container.innerHTML = "<p class='meta-text'>Inga inkommande stationsförslag.</p>";
+      return;
+    }
+    keys.forEach(function (key) {
+      var offer = offers[key];
+      var row = document.createElement("div");
+      row.className = "settings-row";
+      var span = document.createElement("span");
+      span.style.width = "auto";
+      span.style.flex = "1";
+      span.textContent = offer.template.templateName + " (från " + offer.from + ")";
+      var viewBtn = document.createElement("button");
+      viewBtn.type = "button";
+      viewBtn.className = "small-btn";
+      viewBtn.style.margin = "0";
+      viewBtn.textContent = "👁 Visa";
+      viewBtn.addEventListener("click", function () {
+        currentStationOffer = { key: key, offer: offer };
+        document.getElementById("station-offer-preview-title").textContent = "Förslag från " + offer.from;
+        document.getElementById("station-offer-preview-content").innerHTML = templatePreviewHtml(offer.template);
+        stationOfferPreviewBackdrop.classList.add("open");
+      });
+      row.appendChild(span);
+      row.appendChild(viewBtn);
+      container.appendChild(row);
+    });
+  }
+
+  document.getElementById("btn-station-offer-add").addEventListener("click", function () {
+    if (!currentStationOffer) return;
+    var list = loadStationTemplatesLocal();
+    list.push(currentStationOffer.offer.template);
+    saveStationTemplatesLocal(list);
+    renderTemplates(list);
+    db.ref("stationOffers/" + sanitizeKey(myShooterNameInput.value.trim()) + "/" + currentStationOffer.key).remove();
+    stationOfferPreviewBackdrop.classList.remove("open");
+    alert("Tillagd i dina mallar!");
+    currentStationOffer = null;
+  });
+  document.getElementById("btn-station-offer-decline").addEventListener("click", function () {
+    if (!currentStationOffer) return;
+    db.ref("stationOffers/" + sanitizeKey(myShooterNameInput.value.trim()) + "/" + currentStationOffer.key).remove();
+    stationOfferPreviewBackdrop.classList.remove("open");
+    currentStationOffer = null;
   });
 
   // ---------------------------------------------------------------

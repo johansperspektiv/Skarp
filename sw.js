@@ -1,4 +1,4 @@
-// Enkel service worker för Skytte-appen.
+// Enkel service worker för Skarp-appen.
 // Strategi: NÄTVERK FÖRST. Appen uppdateras ofta, så vi vill alltid hämta
 // senaste versionen när man är online - cachen används bara som reserv om
 // man råkar vara offline (t.ex. dåligt mottagning på en skjutbana).
