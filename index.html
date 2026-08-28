@@ -1001,6 +1001,22 @@
   // Den krävs (utöver PIN-koden) för att kunna byta PIN-koden.
   var OWNER_CODE = "7777";
 
+  // En vanlig location.reload() ger inte alltid en helt färsk sidladdning i
+  // vissa PWA/service worker-miljöer (särskilt installerade genvägar på
+  // hemskärmen) - gammal JS-status (t.ex. skyttlista, vilken match man var
+  // ansluten till) kan då hänga kvar i minnet trots att matchkoden precis
+  // bytts i localStorage. En riktig navigering till en ny URL (med en
+  // cache-brytande parameter) tvingar istället fram en helt ny sidladdning
+  // varje gång, så att appen garanterat startar om från noll.
+  function hardReload() {
+    try {
+      var base = location.href.split("#")[0].split("?")[0];
+      location.href = base + "?_r=" + Date.now();
+    } catch (e) {
+      location.reload();
+    }
+  }
+
   var firebaseConfig = {
     apiKey: "AIzaSyBS68ex85OXo6ah0G0V92LYNVCSxWbOE4k",
     authDomain: "sra-points.firebaseapp.com",
@@ -1136,7 +1152,7 @@
           window.localStorage.removeItem("poangrakning_match_code");
           window.localStorage.removeItem("poangrakning_established_as_skjutledare");
         } catch (e) { /* ignore */ }
-        location.reload();
+        hardReload();
         return;
       }
       var cleaned = sanitizeMatchCode(newCode);
@@ -1153,7 +1169,7 @@
           window.localStorage.setItem("poangrakning_match_code", cleaned);
           window.localStorage.setItem("poangrakning_established_as_skjutledare", isCreator ? "1" : "0");
         } catch (e) { /* ignore */ }
-        location.reload();
+        hardReload();
       }
 
       // Flyttar med det jag redan hunnit fylla i (Plats/Datum/Skytteform/
@@ -5666,7 +5682,7 @@
         window.localStorage.removeItem("poangrakning_established_as_skjutledare");
       } catch (e) { /* ignore */ }
       alert("Passet sparat i din loggbok (molnet, med säkerhetskopia)! Matchkoden är nu bortkopplad - redo för nästa pass.");
-      location.reload();
+      hardReload();
     }).catch(function (err) {
       alert("Något gick fel: " + err.message);
     });
@@ -5903,7 +5919,7 @@
         window.localStorage.removeItem("poangrakning_jag_ska_skjuta");
       } catch (e) { /* ignore */ }
       alert("Matchkoden är nollställd. Appen laddas om.");
-      location.reload();
+      hardReload();
     }).catch(function (err) {
       alert("Något gick fel: " + err.message);
     });
