@@ -2642,6 +2642,26 @@
     if (savedMyName) myShooterNameInput.value = savedMyName;
   } catch (e) { /* localStorage kan vara blockerat */ }
 
+  // ---------------------------------------------------------------
+  // Registrerar mig automatiskt i den delade skyttlistan så fort jag är
+  // ansluten till en match/träning. Annars syns jag varken som snabbval
+  // under Registrera (för skjutledaren) eller som individuellt DM-val i
+  // Samband förrän någon manuellt lagt till mitt namn - vilket lätt missas
+  // och ser ut som att anslutningen inte synkar alls.
+  // ---------------------------------------------------------------
+  function ensureSelfRegisteredAsShooter() {
+    if (!db || !isConnectedToSharedCode) return;
+    var name = myShooterNameInput.value.trim();
+    if (!name) return;
+    var key = sanitizeKey(name);
+    if (!key) return;
+    db.ref(dbPath("shooters/" + key)).once("value").then(function (snap) {
+      if (snap.val() !== null) return; // redan registrerad sedan tidigare
+      db.ref(dbPath("shooters/" + key)).set({ name: name, addedAt: Date.now() });
+    }).catch(function () { /* ignore */ });
+  }
+  ensureSelfRegisteredAsShooter();
+
   // Första gången appen öppnas (inget namn sparat än) måste man välja ett
   // användarnamn innan man kan använda appen - det blir sedan låst som
   // Skytt-namnet (grått fält på Start) och kan bara ändras under
@@ -2656,6 +2676,7 @@
     if (typeof migratePersonalLogIfNeeded === "function") migratePersonalLogIfNeeded();
     if (typeof migratePersonalLogToUserIdIfNeeded === "function") migratePersonalLogToUserIdIfNeeded();
     if (typeof refreshFriendsAndOffers === "function") refreshFriendsAndOffers();
+    ensureSelfRegisteredAsShooter();
     document.getElementById("firstTimeUsernameBackdrop").classList.remove("open");
   }
   document.getElementById("btn-first-time-username-save").addEventListener("click", function () {
