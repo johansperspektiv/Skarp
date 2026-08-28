@@ -1181,10 +1181,15 @@
         });
       }
 
-      // Avgör om matchen/träningen redan finns via en dedikerad markör -
-      // finns den inte alls är namnet nytt (ledigt att skapa).
-      db.ref("codes/" + cleaned + "/settings/established").once("value").then(function (estSnap) {
-        var exists = estSnap.val() === true;
+      // Avgör om matchen/träningen redan finns genom att kolla om koden har
+      // NÅGON data alls (inte bara "established"-flaggan) - annars riskerar
+      // en redan befintlig match (t.ex. skapad innan denna flagga infördes,
+      // eller om skrivningen av flaggan av någon anledning missades) att
+      // felaktigt tolkas som ledig. Det skulle i sin tur få den som ansluter
+      // att skriva över den riktiga matchen med sin egen tomma privata data
+      // och av misstag bli skjutledare för en match som redan finns.
+      db.ref("codes/" + cleaned).once("value").then(function (rootSnap) {
+        var exists = rootSnap.exists();
 
         if (!exists) {
           // Nytt namn - jag blir skjutledare/skapare av matchen.
