@@ -417,7 +417,7 @@
 
     <hr style="margin-top:25px;">
     <h2 style="margin-top:0;">Senaste resultaten</h2>
-    <p class="meta-text" style="margin-top:0;">De 5 senast sparade skytteresultaten - ifall du glömde ladda ner dem ligger de kvar här ett tag. Klicka på ett för att ladda ner resultatet som PDF.</p>
+    <p class="meta-text" style="margin-top:0;">De 5 senast aktiva skyttarnas TOTALA resultat för hela aktiviteten (summerat över alla stationer) - ifall du glömde ladda ner dem ligger de kvar här ett tag. Klicka på en rad för att ladda ner hela aktivitetens resultat som PDF.</p>
     <div id="recent-log-activity">Laddar…</div>
   </div>
 
@@ -553,7 +553,7 @@
     <div id="template-list"></div>
 
     <div class="info-box" style="margin-top:15px;">
-      <p style="margin:0 0 8px 0;font-size:13px;">Lägger till/uppdaterar de 12 fördefinierade standardstationerna (Up drill, Double tap, El Presidente m.fl.) i din mallista. Egna eller andra mallar du redan skapat påverkas inte och raderas inte. Behövs oftast bara en gång.</p>
+      <p style="margin:0 0 8px 0;font-size:13px;">Lägger till/uppdaterar de <span id="base-template-count-1">12</span> fördefinierade standardstationerna (Up drill, Double tap, El Presidente m.fl.) i din mallista. Egna eller andra mallar du redan skapat påverkas inte och raderas inte. Behövs oftast bara en gång.</p>
       <button id="btn-recover-legacy" class="small-btn" style="margin:0;">📑 Hämta bas-stationer</button>
     </div>
 
@@ -812,7 +812,7 @@
     <ul>
       <li>Gå in på "Inställningar" och lägg upp stationerna. Är du markerad som skjutledare och ansluten till en delad kod har du redan full åtkomst utan att skriva någon PIN. Tryck på pennan ✏️ bredvid en station för att öppna redigeringsläget: namn, avstånd, vapen, startposition (Grundställning, Färdigställning, eller egen), måltyper (Metric, HF2020, Stål eller Pistoltavla — med antal mål och skott per mål), ev. bonusuppgift (alltid värd 10 poäng), No-shoot-mål, beskrivning och gärna en bild på stationen. Tryck "💾 Spara ändringar" när du är klar.</li>
       <li>Ska du köra ren precisionsskjutning kan du använda genvägen "🎯 Lägg till 10× Pistoltavla" som skapar tio färdiga stationer (10 serier à 5 skott) på en gång.</li>
-      <li>Spara gärna en station som mall (📑) för att snabbt kunna återanvända den vid nästa tävling — sparade mallar hittar du under Inställningar, sorterade efter avstånd. Mallarna är personliga och sparas på din egen enhet, så de följer med dig oavsett vilken match/träning du ansluter till. "📑 Hämta bas-stationer" (längre ner, behövs oftast bara en gång) lägger till appens 12 fördefinierade standardstationer i din mallista utan att röra dina egna. Har någon annan i samma match lagt till en station du inte redan har som mall visas en "💾 Lägg till i mina mallar"-knapp för att spara den med ett enda klick. Vill du utöka basutbudet med en egen mall permanent, klicka i stjärnan (☆/⭐) bredvid mallen — den kommer då alltid med när du trycker "Hämta bas-stationer" igen, t.ex. på en ny enhet.</li>
+      <li>Spara gärna en station som mall (📑) för att snabbt kunna återanvända den vid nästa tävling — sparade mallar hittar du under Inställningar, sorterade efter avstånd. Mallarna är personliga och sparas på din egen enhet, så de följer med dig oavsett vilken match/träning du ansluter till. "📑 Hämta bas-stationer" (längre ner, behövs oftast bara en gång) lägger till appens <span id="base-template-count-2">12</span> fördefinierade standardstationer i din mallista utan att röra dina egna. Har någon annan i samma match lagt till en station du inte redan har som mall visas en "💾 Lägg till i mina mallar"-knapp för att spara den med ett enda klick. Vill du utöka basutbudet med en egen mall permanent, klicka i stjärnan (☆/⭐) bredvid mallen — den kommer då alltid med när du trycker "Hämta bas-stationer" igen, t.ex. på en ny enhet.</li>
       <li>Vill du köra samma övning flera gånger (t.ex. flera serier på en precisionsstation)? Tryck "🔁 Duplicera som Serie" i Inställningar, eller "➕ Lägg till en serie" direkt på Registrera (kräver PIN om ingen är aktiverad, eller om du inte är markerad som skjutledare) — den nya serien hamnar automatiskt precis efter sin ursprungsstation, inte längst ner i listan, och poängsätts helt separat från originalstationen.</li>
       <li>Du kan ta bort en enskild station direkt från Registrera ("🗑️ Ta bort denna station") eller alla på en gång via "🗑️ Ta bort alla stationer" i Inställningar — båda blockeras om stationen/stationerna redan har registrerade resultat. Nollställ i så fall stationen under Topplista först.</li>
     </ul>
@@ -1263,13 +1263,17 @@
   }
   function saveStationTemplatesLocal(list) {
     try { window.localStorage.setItem("poangrakning_station_templates", JSON.stringify(list)); } catch (e) { /* ignore */ }
+    // Speglar mallarna i molnet under det egna permanenta ID:t, så de finns
+    // kvar även om appen ominstalleras eller man byter till en ny enhet -
+    // inte bara sparade lokalt på just den här telefonen.
+    if (db && myUserId) db.ref("users/" + myUserId + "/stationTemplates").set(list);
   }
 
-  // Utöver de 12 fördefinierade standardstationerna kan man själv märka
+  // Utöver de fördefinierade standardstationerna kan man själv märka
   // valfria egna mallar som "del av mitt basutbud" - de sparas i en egen
-  // lista och kommer då alltid med (tillsammans med de 12 vanliga) när man
-  // trycker "Hämta bas-stationer", t.ex. på en ny enhet eller efter att ha
-  // rensat sina mallar.
+  // lista och kommer då alltid med (tillsammans med standardstationerna) när
+  // man trycker "Hämta bas-stationer", t.ex. på en ny enhet eller efter att
+  // ha rensat sina mallar.
   function loadCustomBaseTemplatesLocal() {
     try {
       var raw = window.localStorage.getItem("poangrakning_custom_base_templates");
@@ -1278,6 +1282,44 @@
   }
   function saveCustomBaseTemplatesLocal(list) {
     try { window.localStorage.setItem("poangrakning_custom_base_templates", JSON.stringify(list)); } catch (e) { /* ignore */ }
+    if (db && myUserId) db.ref("users/" + myUserId + "/customBaseTemplates").set(list);
+  }
+
+  // Engångssynk: hämtar mallar och eget basutbud från molnet (kopplat till
+  // mitt permanenta ID) om de saknas lokalt - t.ex. efter en ominstallation
+  // eller på en ny enhet. Om det istället bara finns lokalt (och inget i
+  // molnet ännu) laddas de upp, så nästa enhet kan hämta dem. Körs bara en
+  // gång per sidladdning, när namnet (och därmed rätt ID) är känt.
+  var stationTemplatesCloudSynced = false;
+  function syncStationTemplatesFromCloudIfNeeded() {
+    if (stationTemplatesCloudSynced || !db || !myUserId) return;
+    var name = myShooterNameInput.value.trim();
+    if (!name) return;
+    stationTemplatesCloudSynced = true;
+
+    var templatesRef = db.ref("users/" + myUserId + "/stationTemplates");
+    var baseRef = db.ref("users/" + myUserId + "/customBaseTemplates");
+
+    templatesRef.once("value").then(function (snap) {
+      var cloudTemplates = snap.val() || [];
+      var localTemplates = loadStationTemplatesLocal();
+      if (!localTemplates.length && cloudTemplates.length) {
+        try { window.localStorage.setItem("poangrakning_station_templates", JSON.stringify(cloudTemplates)); } catch (e) { /* ignore */ }
+        if (typeof renderTemplates === "function") renderTemplates(cloudTemplates);
+      } else if (localTemplates.length && !cloudTemplates.length) {
+        templatesRef.set(localTemplates);
+      }
+    });
+
+    baseRef.once("value").then(function (snap) {
+      var cloudBase = snap.val() || [];
+      var localBase = loadCustomBaseTemplatesLocal();
+      if (!localBase.length && cloudBase.length) {
+        try { window.localStorage.setItem("poangrakning_custom_base_templates", JSON.stringify(cloudBase)); } catch (e) { /* ignore */ }
+      } else if (localBase.length && !cloudBase.length) {
+        baseRef.set(localBase);
+      }
+    });
   }
 
   var BASE_STATION_TEMPLATES = [
@@ -1389,8 +1431,19 @@
     }
   ];
 
+  // Håller de statiska hjälptexterna om antal fördefinierade standard-
+  // stationer i synk med den faktiska listan ovan, så att en text som "12"
+  // inte blir felaktig i framtiden när stationer läggs till/tas bort här.
+  (function updateBaseTemplateCountTexts() {
+    var count = String(BASE_STATION_TEMPLATES.length);
+    ["base-template-count-1", "base-template-count-2"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = count;
+    });
+  })();
+
   document.getElementById("btn-recover-legacy").addEventListener("click", function () {
-    if (!confirm("Lägg till/uppdatera standardstationerna (de 12 fördefinierade plus ditt eget basutbud) i din mallista? Andra mallar du redan skapat påverkas inte.")) return;
+    if (!confirm("Lägg till/uppdatera standardstationerna (de " + BASE_STATION_TEMPLATES.length + " fördefinierade plus ditt eget basutbud) i din mallista? Andra mallar du redan skapat påverkas inte.")) return;
 
     var myList = loadStationTemplatesLocal();
     var byName = {};
@@ -2677,6 +2730,26 @@
     }).catch(function () { /* ignore */ });
   }
   ensureSelfRegisteredAsShooter();
+  syncStationTemplatesFromCloudIfNeeded();
+
+  // Om det redan finns ett permanent ID kopplat till det här namnet i
+  // userDirectory (t.ex. efter att appen ominstallerats och ett nytt, tomt
+  // ID skapats lokalt av misstag) - återanvänd det gamla ID:t istället för
+  // att av misstag skapa en ny, tom identitet. Annars "tappas" mallar,
+  // loggbok och vänner vid varje ominstallation trots att de egentligen
+  // finns kvar i molnet. Kör resten av namnsättningen (claim, migrering,
+  // molnsynk) EFTER att ev. återställning är klar, så de använder rätt ID.
+  function recoverExistingUserIdThen(name, cb) {
+    if (!db || !name) { cb(); return; }
+    db.ref("userDirectory/" + sanitizeKey(name)).once("value").then(function (snap) {
+      var existingId = snap.val();
+      if (existingId && existingId !== myUserId) {
+        myUserId = existingId;
+        try { window.localStorage.setItem("poangrakning_user_id", myUserId); } catch (e) { /* ignore */ }
+      }
+      cb();
+    }).catch(function () { cb(); });
+  }
 
   // Första gången appen öppnas (inget namn sparat än) måste man välja ett
   // användarnamn innan man kan använda appen - det blir sedan låst som
@@ -2688,12 +2761,15 @@
   function finishUsernameSetup(name) {
     myShooterNameInput.value = name;
     try { window.localStorage.setItem("poangrakning_my_name", name); } catch (e) { /* ignore */ }
-    if (typeof claimNameForUserId === "function") claimNameForUserId();
-    if (typeof migratePersonalLogIfNeeded === "function") migratePersonalLogIfNeeded();
-    if (typeof migratePersonalLogToUserIdIfNeeded === "function") migratePersonalLogToUserIdIfNeeded();
-    if (typeof refreshFriendsAndOffers === "function") refreshFriendsAndOffers();
-    ensureSelfRegisteredAsShooter();
-    document.getElementById("firstTimeUsernameBackdrop").classList.remove("open");
+    recoverExistingUserIdThen(name, function () {
+      if (typeof claimNameForUserId === "function") claimNameForUserId();
+      if (typeof migratePersonalLogIfNeeded === "function") migratePersonalLogIfNeeded();
+      if (typeof migratePersonalLogToUserIdIfNeeded === "function") migratePersonalLogToUserIdIfNeeded();
+      if (typeof refreshFriendsAndOffers === "function") refreshFriendsAndOffers();
+      syncStationTemplatesFromCloudIfNeeded();
+      ensureSelfRegisteredAsShooter();
+      document.getElementById("firstTimeUsernameBackdrop").classList.remove("open");
+    });
   }
   document.getElementById("btn-first-time-username-save").addEventListener("click", function () {
     var name = document.getElementById("first_time_username_input").value.trim();
@@ -5850,38 +5926,47 @@
     container.innerHTML = "Laddar…";
     db.ref(dbPath("matches/match1")).once("value").then(function (snap) {
       var allData = snap.val() || {};
-      var flat = [];
+
+      // Slår ihop varje skytts resultat över SAMTLIGA stationer i aktiviteten
+      // till en totalsumma - istället för att visa en rad per enskilt
+      // stationsresultat, vilket bara visade individuella delresultat och
+      // inte det samlade resultatet för hela passet.
+      var byShooter = {}; // { shooterKey: { name, totalNet, totalTime, stationCount, lastSavedAt } }
       stationsList.forEach(function (station) {
         var stationData = allData[station.id];
         if (!stationData) return;
         Object.keys(stationData).forEach(function (key) {
           var entry = stationData[key];
-          flat.push({
-            stationName: station.name,
-            name: entry.name,
-            net: entry.net,
-            time: entry.time,
-            savedAt: entry.savedAt || 0
-          });
+          if (!byShooter[key]) {
+            byShooter[key] = { name: entry.name, totalNet: 0, totalTime: 0, stationCount: 0, lastSavedAt: 0 };
+          }
+          var agg = byShooter[key];
+          agg.totalNet += entry.net || 0;
+          agg.totalTime += entry.time || 0;
+          agg.stationCount += 1;
+          agg.lastSavedAt = Math.max(agg.lastSavedAt, entry.savedAt || 0);
         });
       });
 
-      if (!flat.length) {
+      var summaries = Object.keys(byShooter).map(function (key) { return byShooter[key]; });
+
+      if (!summaries.length) {
         container.innerHTML = "<p class='meta-text'>Inga sparade resultat ännu.</p>";
         return;
       }
 
-      flat.sort(function (a, b) { return b.savedAt - a.savedAt; });
-      var last5 = flat.slice(0, 5);
+      summaries.sort(function (a, b) { return b.lastSavedAt - a.lastSavedAt; });
+      var last5 = summaries.slice(0, 5);
       container.innerHTML = "";
       last5.forEach(function (r) {
         var card = document.createElement("div");
         card.className = "card";
         card.style.cursor = "pointer";
-        var whenText = r.savedAt ? new Date(r.savedAt).toLocaleString("sv-SE") : "-";
+        var whenText = r.lastSavedAt ? new Date(r.lastSavedAt).toLocaleString("sv-SE") : "-";
+        var stationWord = r.stationCount === 1 ? "station" : "stationer";
         card.innerHTML =
-          "<strong>" + escapeHtml(r.name) + "</strong> — " + escapeHtml(r.stationName) +
-          "<div class='meta-text'>" + r.net + "p" + (r.time ? " · " + r.time + "s" : "") + " · " + whenText + "</div>";
+          "<strong>" + escapeHtml(r.name) + "</strong> — totalt " + r.totalNet + "p (" + r.stationCount + " " + stationWord + ")" +
+          "<div class='meta-text'>" + (r.totalTime ? r.totalTime.toFixed(2) + "s totalt · " : "") + whenText + "</div>";
         card.addEventListener("click", function () {
           printLeaderboardPDF();
         });
